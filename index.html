@@ -3,6 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملعبي Pro | فريقي المفضل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --fav: #f59e0b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 15px; padding-bottom: 80px; }
+        
+        header { text-align: center; margin-bottom: 20px; padding: 15px; border-bottom: 2px solid var(--card); }
+        header h1 { color: var(--accent); font-size: 1.8rem; }
+
+        .nav-leagues { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+        .nav-btn { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .nav-btn.active { background: var(--accent); color: var(--bg); font-weight: bold; }
+
+        .view-tabs { display: flex; background: var(--card); border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: none; color: var(--text); cursor: pointer; }
+        .tab-btn.active { background: var(--accent); color: var(--bg); font-weight: bold; }
+
+        .section-header { margin: 20px 0 10px; padding-right: 10px; border-right: 4px solid var(--accent); color: var(--accent); font-size: 1rem; }
+        .fav-section { border-right-color: var(--fav); color: var(--fav); }
+
+        .match-card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid transparent; }
+        .match-card.is-fav { border-right-color: var(--fav); background: rgba(245, 158, 11, 0.05); }
+        .team { flex: 1; text-align: center; cursor: pointer; transition: 0.2s; position: relative; }
+        .team:hover { transform: translateY(-2px); }
+        .team img { width: 32px; height: 32px; object-fit: contain; }
+        .team span { display: block; font-size: 0.75rem; margin-top: 4px; }
+        .fav-star { position: absolute; top: -5px; right: 5px; color: var(--fav); font-size: 1rem; display: none; }
+        .is-fav-team .fav-star { display: block; }
+
+        .score-area { flex: 1; text-align: center; }
+        .score { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
+        .status-label { font-size: 0.7rem; color: #94a3b8; }
+
+        /* جدول الترتيب */
+        .standings-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
+        .standings-table th { background: #334155; padding: 10px; text-align: right; }
+        .standings-table td { padding: 10px; border-bottom: 1px solid #334155; }
+        .row-fav { background: rgba(245, 158, 11, 0.1) !important; }
+
+        .loading { text-align: center; padding: 40px; color: var(--accent); }
+        .hint { font-size: 0.7rem; color: var(--past); text-align: center; margin-bottom: 10px; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚽ ملعبي Pro</h1>
+        <p class="hint">اضغط على اسم الفريق لمتابعته وتفضيله ⭐</p>
+    </header>
+
+    <div class="nav-leagues">
+        <button class="nav-btn active" onclick="changeLeague('PL', this)">الإنجليزي</button>
+        <button class="nav-btn" onclick="changeLeague('PD', this)">الإسباني</button>
+        <button class="nav-btn" onclick="changeLeague('BL1', this)">الألماني</button>
+        <button class="nav-btn" onclick="changeLeague('CL', this)">الأبطال</button>
+        <button class="nav-btn" onclick="changeLeague('FL1', this)">الفرنسي</button>
+    </div>
+
+    <div class="view-tabs">
+        <button class="tab-btn active" onclick="switchView('matches', this)">المباريات</button>
+        <button class="tab-btn" onclick="switchView('table', this)">الترتيب</button>
+    </div>
+
+    <div id="main-content">
+        <div class="loading">جاري التجهيز...</div>
+    </div>
+
+    <script>
+        const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
+        let currentLeague = 'PL';
+        let currentView = 'matches';
+        let favoriteTeamId = localStorage.getItem('favTeamId');
+
+        async function fetchData(endpoint) {
+            const proxyUrl = 'https://corsproxy.io/?';
+            const targetUrl = `https://api.football-data.org/v4/competitions/${currentLeague}/${endpoint}`;
+            const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
+                headers: { 'X-Auth-Token': API_KEY }
+            });
+            if (!response.ok) throw new Error('خطأ في البيانات');
+            return await response.json();
+        }
+
+        async function loadContent() {
+            const container = document.getElementById('main-content');
+            container.innerHTML = '<div class="loading">جاري التحديث...</div>';
+            
+            try {
+                if (currentView === 'matches') {
+                    const data = await fetchData('matches');
+                    renderMatches(data.matches);
+                } else {
+                    const data = await fetchData('standings');
+                    renderTable(data.standings[0].table);
+                }
+            } catch (e) {
+                container.innerHTML = '<div class="loading" style="color:red">فشل جلب البيانات. حاول مجدداً.</div>';
+            }
+        }
+
+        function renderMatches(matches) {
+            const container = document.getElementById('main-content');
+            
+            // فلترة القادم والسابق
+            const upcoming = matches.filter(m => m.status !== 'FINISHED').slice(0, 15);
+            const finished = matches.filter(m => m.status === 'FINISHED').sort((a,b)=>new Date(b.utcDate)-new Date(a.utcDate)).slice(0, 10);
+
+            // تمييز المباريات المفضلة
+            const isFavMatch = (m) => m.homeTeam.id == favoriteTeamId || m.awayTeam.id == favoriteTeamId;
+            const favMatches = [...upcoming, ...finished].filter(isFavMatch);
+            const otherUpcoming = upcoming.filter(m => !isFavMatch(m));
+
+            let html = '';
+            
+            if (favMatches.length > 0) {
+                html += '<div class="section-header fav-section">⭐ مباريات فريقك المفضل</div>';
+                html += favMatches.map(m => createMatchCard(m)).join('');
+            }
+
+            html += '<div class="section-header">المباريات القادمة</div>';
+            html += otherUpcoming.map(m => createMatchCard(m)).join('');
+
+            html += '<div class="section-header">أحدث النتائج</div>';
+            html += finished.filter(m => !isFavMatch(m)).map(m => createMatchCard(m)).join('');
+
+            container.innerHTML = html;
+        }
+
+        function createMatchCard(match) {
+            const isFav = match.homeTeam.id == favoriteTeamId || match.awayTeam.id == favoriteTeamId;
+            const mDate = new Date(match.utcDate).toLocaleDateString('ar-SA', {month:'short', day:'numeric'});
+            return `
+                <div class="match-card ${isFav ? 'is-fav' : ''}">
+                    <div class="team ${match.homeTeam.id == favoriteTeamId ? 'is-fav-team' : ''}" onclick="setFavorite(${match.homeTeam.id}, '${match.homeTeam.name}')">
+                        <span class="fav-star">⭐</span>
+                        <img src="${match.homeTeam.crest}">
+                        <span>${match.homeTeam.shortName || match.homeTeam.name}</span>
+                    </div>
+                    <div class="score-area">
+                        <div class="score">${match.score.fullTime.home ?? '-'} : ${match.score.fullTime.away ?? '-'}</div>
+                        <div class="status-label">${mDate}</div>
+                    </div>
+                    <div class="team ${match.awayTeam.id == favoriteTeamId ? 'is-fav-team' : ''}" onclick="setFavorite(${match.awayTeam.id}, '${match.awayTeam.name}')">
+                        <span class="fav-star">⭐</span>
+                        <img src="${match.awayTeam.crest}">
+                        <span>${match.awayTeam.shortName || match.awayTeam.name}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTable(table) {
+            let html = `
+                <div class="section-header">جدول الترتيب</div>
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الفريق</th>
+                            <th>لعب</th>
+                            <th>نقاط</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            html += table.map(row => `
+                <tr class="${row.team.id == favoriteTeamId ? 'row-fav' : ''}" onclick="setFavorite(${row.team.id}, '${row.team.name}')">
+                    <td>${row.position}</td>
+                    <td style="display:flex; align-items:center; gap:8px">
+                        <img src="${row.team.crest}" width="20"> ${row.team.shortName || row.team.name}
+                    </td>
+                    <td>${row.playedGames}</td>
+                    <td style="font-weight:bold; color:var(--accent)">${row.points}</td>
+                </tr>
+            `).join('');
+            html += '</tbody></table>';
+            document.getElementById('main-content').innerHTML = html;
+        }
+
+        function setFavorite(<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ملعبي | النتائج الشاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
