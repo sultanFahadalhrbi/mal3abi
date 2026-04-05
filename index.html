@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ملعبي | نتائج مباشرة</title>
+    <title>ملعبي | مباريات أبريل</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --live: #ef4444; }
@@ -14,24 +14,22 @@
         .nav-leagues { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
         .nav-btn { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
         .nav-btn.active { background: var(--accent); color: var(--bg); font-weight: bold; transform: scale(1.05); }
-        .match-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border-right: 5px solid var(--accent); transition: 0.3s; }
-        .team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .team img { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .team span { font-weight: bold; font-size: 0.85rem; }
+        .match-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-right: 5px solid var(--accent); }
+        .team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .team img { width: 35px; height: 35px; object-fit: contain; }
+        .team span { font-weight: bold; font-size: 0.8rem; }
         .score-area { flex: 1; text-align: center; }
-        .score { font-size: 1.8rem; font-weight: bold; color: var(--accent); letter-spacing: 5px; }
-        .live-tag { background: var(--live); color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.75rem; animation: blink 1s infinite; display: inline-block; margin-top: 5px; }
-        @keyframes blink { 50% { opacity: 0.4; } }
-        .status-label { font-size: 0.8rem; color: #94a3b8; display: block; margin-top: 5px; }
+        .score { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+        .status-label { font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 5px; }
         .loading { text-align: center; margin-top: 50px; color: var(--accent); font-size: 1.2rem; }
-        .error-msg { text-align: center; color: #f87171; padding: 30px; background: rgba(248, 113, 113, 0.1); border-radius: 15px; margin-top: 20px; }
+        .error-msg { text-align: center; color: #f87171; padding: 20px; background: rgba(248, 113, 113, 0.1); border-radius: 15px; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>⚽ ملعبي</h1>
-        <p>نتائج حية وجدول المباريات</p>
+        <p>جدول مباريات شهر أبريل 2026</p>
     </header>
 
     <div class="nav-leagues">
@@ -43,11 +41,10 @@
     </div>
 
     <div id="matches-container">
-        <div class="loading">جاري فحص الملاعب...</div>
+        <div class="loading">جاري تحضير جدول أبريل...</div>
     </div>
 
     <script>
-        // الكود الخاص بك من الإيميل
         const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
         let currentLeague = 'PL';
 
@@ -55,7 +52,6 @@
             const container = document.getElementById('matches-container');
             container.innerHTML = '<div class="loading">جاري تحديث النتائج...</div>';
             
-            // استخدمنا هذا الرابط لتجاوز مشكلة الحظر (CORS)
             const proxyUrl = 'https://corsproxy.io/?';
             const targetUrl = `https://api.football-data.org/v4/competitions/${currentLeague}/matches`;
 
@@ -64,64 +60,32 @@
                     headers: { 'X-Auth-Token': API_KEY }
                 });
 
-                if (!response.ok) throw new Error('خطأ في الاتصال، انتظر دقيقة وجرب مجدداً.');
+                if (!response.ok) throw new Error('انتظر دقيقة وجرب مجدداً (ضغط طلبات)');
 
                 const data = await response.json();
                 renderMatches(data.matches);
             } catch (error) {
-                container.innerHTML = `<div class="error-msg">⚠️ عذراً: ${error.message}</div>`;
+                container.innerHTML = `<div class="error-msg">⚠️ ${error.message}</div>`;
             }
         }
 
         function renderMatches(matches) {
             const container = document.getElementById('matches-container');
             
-            // عرض آخر 12 مباراة تم لعبها أو ستلعب
-            const sortedMatches = matches
-                .sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
-                .slice(0, 12);
+            // فلتر شهر أبريل 2026 فقط
+            const aprilMatches = matches.filter(match => {
+                const d = new Date(match.utcDate);
+                return d.getMonth() === 3 && d.getFullYear() === 2026;
+            }).sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
 
-            if (!sortedMatches || sortedMatches.length === 0) {
-                container.innerHTML = '<div class="loading">لا توجد مباريات مسجلة حالياً.</div>';
+            if (aprilMatches.length === 0) {
+                container.innerHTML = '<div class="loading">لا توجد مباريات مسجلة في أبريل لهذا الدوري.</div>';
                 return;
             }
 
-            container.innerHTML = sortedMatches.map(match => {
-                const isLive = ['IN_PLAY', 'PAUSED'].includes(match.status);
-                const matchTime = new Date(match.utcDate).toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
-                const matchDate = new Date(match.utcDate).toLocaleDateString('ar-SA', {month:'short', day:'numeric'});
+            container.innerHTML = aprilMatches.map(match => {
+                const mDate = new Date(match.utcDate).toLocaleDateString('ar-SA', {month:'long', day:'numeric'});
+                const mTime = new Date(match.utcDate).toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
                 
                 return `
-                    <div class="match-card">
-                        <div class="team">
-                            <img src="${match.homeTeam.crest || ''}" onerror="this.src='https://via.placeholder.com/40?text=?'">
-                            <span>${match.homeTeam.shortName || match.homeTeam.name}</span>
-                        </div>
-                        <div class="score-area">
-                            <div class="score">
-                                ${match.score.fullTime.home ?? 0} - ${match.score.fullTime.away ?? 0}
-                            </div>
-                            <div class="status">
-                                ${isLive ? '<span class="live-tag">مباشر</span>' : `<span class="status-label">${matchDate} | ${matchTime}</span>`}
-                            </div>
-                        </div>
-                        <div class="team">
-                            <img src="${match.awayTeam.crest || ''}" onerror="this.src='https://via.placeholder.com/40?text=?'">
-                            <span>${match.awayTeam.shortName || match.awayTeam.name}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function changeLeague(code, btn) {
-            currentLeague = code;
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            fetchMatches();
-        }
-
-        fetchMatches();
-    </script>
-</body>
-</html>
+                    <div class="match-card
