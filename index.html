@@ -6,6 +6,128 @@
     <title>ملعبي | النتائج الشاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --live: #ef4444; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 15px; }
+        header { text-align: center; margin-bottom: 20px; padding: 20px; border-bottom: 2px solid var(--card); }
+        header h1 { color: var(--accent); font-size: 2.2rem; }
+        .nav-leagues { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .nav-btn { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
+        .nav-btn.active { background: var(--accent); color: var(--bg); font-weight: bold; }
+        .match-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-right: 5px solid var(--accent); }
+        .team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .team img { width: 35px; height: 35px; object-fit: contain; }
+        .score-area { flex: 1; text-align: center; }
+        .score { font-size: 1.6rem; font-weight: bold; color: var(--accent); }
+        .status-label { font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 5px; }
+        .loading { text-align: center; margin-top: 50px; color: var(--accent); }
+        .error-container { text-align: center; padding: 30px; background: rgba(248, 113, 113, 0.1); border-radius: 15px; color: #f87171; }
+        .error-container button { margin-top: 10px; padding: 8px 15px; background: var(--accent); border: none; border-radius: 8px; cursor: pointer; color: var(--bg); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚽ ملعبي</h1>
+        <p>متابعة حيّة لنتائج الدوريات</p>
+    </header>
+
+    <div class="nav-leagues">
+        <button class="nav-btn active" onclick="changeLeague('PL', this)">الإنجليزي</button>
+        <button class="nav-btn" onclick="changeLeague('PD', this)">الإسباني</button>
+        <button class="nav-btn" onclick="changeLeague('BL1', this)">الألماني</button>
+        <button class="nav-btn" onclick="changeLeague('SA', this)">الإيطالي</button>
+        <button class="nav-btn" onclick="changeLeague('CL', this)">دوري الأبطال</button>
+    </div>
+
+    <div id="matches-container">
+        <div class="loading">بانتظار صافرة البداية...</div>
+    </div>
+
+    <script>
+        const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
+        let currentLeague = 'PL';
+
+        async function fetchMatches() {
+            const container = document.getElementById('matches-container');
+            container.innerHTML = '<div class="loading">جاري سحب النتائج من الملعب...</div>';
+            
+            const proxyUrl = 'https://corsproxy.io/?';
+            const targetUrl = `https://api.football-data.org/v4/competitions/${currentLeague}/matches`;
+
+            try {
+                const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
+                    headers: { 'X-Auth-Token': API_KEY }
+                });
+
+                if (response.status === 403) {
+                    throw new Error('عذراً، الدوري الإيطالي يحتاج اشتراك مدفوع في مصدر البيانات.');
+                }
+                
+                if (!response.ok) throw new Error('مشكلة في الشبكة، جرب مرة أخرى.');
+
+                const data = await response.json();
+                renderMatches(data.matches);
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="error-container">
+                        <p>⚠️ ${error.message}</p>
+                        <button onclick="fetchMatches()">تحديث المحاولة</button>
+                    </div>`;
+            }
+        }
+
+        function renderMatches(matches) {
+            const container = document.getElementById('matches-container');
+            
+            // ترتيب وعرض آخر 15 مباراة
+            const sorted = matches.sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate)).slice(0, 15);
+
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="loading">لا توجد مباريات مسجلة حالياً.</div>';
+                return;
+            }
+
+            container.innerHTML = sorted.map(match => {
+                const mDate = new Date(match.utcDate).toLocaleDateString('ar-SA', {month:'short', day:'numeric'});
+                const mTime = new Date(match.utcDate).toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
+                return `
+                    <div class="match-card">
+                        <div class="team">
+                            <img src="${match.homeTeam.crest || ''}" onerror="this.src='https://via.placeholder.com/35?text=?'">
+                            <span>${match.homeTeam.shortName || match.homeTeam.name}</span>
+                        </div>
+                        <div class="score-area">
+                            <div class="score">${match.score.fullTime.home ?? '-'} - ${match.score.fullTime.away ?? '-'}</div>
+                            <span class="status-label">${mDate} | ${mTime}</span>
+                        </div>
+                        <div class="team">
+                            <img src="${match.awayTeam.crest || ''}" onerror="this.src='https://via.placeholder.com/35?text=?'">
+                            <span>${match.awayTeam.shortName || match.awayTeam.name}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function changeLeague(code, btn) {
+            currentLeague = code;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            fetchMatches();
+        }
+
+        fetchMatches();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملعبي | النتائج الشاملة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --live: #ef4444; --past: #94a3b8; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding: 15px; line-height: 1.6; }
