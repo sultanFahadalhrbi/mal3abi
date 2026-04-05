@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ملعبي | Mal3abi - النتائج المباشرة</title>
+    <title>ملعبي | منصة النتائج المباشرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -27,7 +27,6 @@
             line-height: 1.6;
         }
 
-        /* Header */
         header {
             background: rgba(5, 5, 7, 0.85);
             backdrop-filter: blur(20px);
@@ -36,106 +35,73 @@
             position: sticky; top: 0; z-index: 1000;
             display: flex; align-items: center; justify-content: space-between;
         }
-        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo-ico {
             background: var(--accent);
-            width: 42px; height: 42px; border-radius: 12px;
+            width: 38px; height: 38px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(0, 255, 163, 0.4);
+            box-shadow: 0 0 15px rgba(0, 255, 163, 0.3);
         }
-        .logo-txt h1 { font-size: 22px; font-weight: 800; line-height: 1; margin: 0; }
-        .logo-txt span { font-size: 11px; color: var(--txt-mute); font-weight: 500; }
+        .logo-txt h1 { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -1px; }
 
-        /* Stats Bar */
         .stats-bar {
             display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 15px; padding: 20px 5%; margin-top: 10px;
+            gap: 15px; padding: 20px 5%;
         }
         .stat-box {
             background: var(--grad); border: 1px solid var(--card-brd);
             padding: 15px; border-radius: 18px; text-align: center;
-            transition: 0.3s;
         }
         .stat-num { font-size: 24px; font-weight: 800; display: block; color: var(--accent); }
         .stat-box.live .stat-num { color: var(--danger); }
-        .stat-lbl { font-size: 12px; color: var(--txt-mute); margin-top: 4px; }
+        .stat-lbl { font-size: 11px; color: var(--txt-mute); margin-top: 4px; }
 
-        /* Main Grid */
         .wrapper {
-            max-width: 1300px; margin: 0 auto; padding: 0 5% 40px;
-            display: grid; grid-template-columns: 260px 1fr; gap: 30px;
+            max-width: 1200px; margin: 0 auto; padding: 0 5% 40px;
+            display: grid; grid-template-columns: 240px 1fr; gap: 25px;
         }
 
-        /* Sidebar Nav */
-        .side-nav { position: sticky; top: 100px; height: fit-content; }
+        .side-nav { position: sticky; top: 90px; height: fit-content; }
         .nav-group { background: var(--card); border-radius: 20px; padding: 8px; border: 1px solid var(--card-brd); }
         .nav-btn {
             width: 100%; border: none; background: transparent; color: var(--txt-mute);
-            padding: 12px 15px; border-radius: 14px; cursor: pointer;
-            display: flex; align-items: center; gap: 12px; transition: 0.2s;
-            font-size: 14px; font-weight: 500; font-family: inherit; margin-bottom: 4px;
-            text-align: right;
+            padding: 12px 15px; border-radius: 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: 0.2s;
+            font-size: 14px; font-family: inherit; margin-bottom: 2px; text-align: right;
         }
-        .nav-btn:hover, .nav-btn.active { background: var(--accent-soft); color: var(--accent); }
-        .nav-btn .badge { margin-right: auto; font-size: 10px; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 8px; }
+        .nav-btn.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 
-        /* Content Controls */
-        .controls {
-            display: flex; align-items: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;
-        }
-        .search { flex: 1; position: relative; min-width: 280px; }
+        .controls { display: flex; gap: 15px; margin-bottom: 20px; }
+        .search { flex: 1; position: relative; }
         .search input {
             width: 100%; background: var(--card); border: 1px solid var(--card-brd);
-            padding: 12px 15px 12px 45px; border-radius: 15px; color: #fff;
-            font-size: 14px; transition: 0.3s; font-family: inherit;
+            padding: 12px 15px; border-radius: 12px; color: #fff; font-family: inherit;
         }
-        .search input:focus { border-color: var(--accent); }
 
-        /* Match Card */
-        .league-title { 
-            margin: 30px 0 15px; font-size: 16px; font-weight: 700; 
-            display: flex; align-items: center; gap: 10px; color: var(--accent);
-        }
+        .league-title { margin: 25px 0 12px; font-size: 14px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 8px; }
         .match-card {
-            background: var(--grad); border-radius: 20px; border: 1px solid var(--card-brd);
-            margin-bottom: 12px; overflow: hidden; transition: 0.3s;
+            background: var(--grad); border-radius: 16px; border: 1px solid var(--card-brd);
+            margin-bottom: 10px; padding: 15px; display: grid; grid-template-columns: 80px 1fr 50px; align-items: center;
         }
-        .match-card:hover { border-color: rgba(255,255,255,0.15); }
+
+        .m-status { text-align: center; font-size: 12px; border-left: 1px solid var(--card-brd); }
+        .live-tag { color: var(--danger); font-weight: 800; animation: blink 2s infinite; }
         
-        .match-body {
-            display: grid; grid-template-columns: 100px 1fr 100px; 
-            padding: 20px; align-items: center;
-        }
-
-        .status-col { text-align: center; }
-        .m-time { font-size: 15px; font-weight: 700; }
-        .live-pulse {
-            display: inline-flex; align-items: center; gap: 5px;
-            color: var(--danger); font-size: 11px; font-weight: 800;
-            background: rgba(255, 59, 59, 0.1); padding: 2px 8px; border-radius: 6px;
-            animation: pulse 2.5s infinite;
-        }
-
-        .teams-col { 
-            display: flex; flex-direction: column; gap: 12px; 
-            border-right: 1px solid var(--card-brd); border-left: 1px solid var(--card-brd);
-            padding: 0 25px;
-        }
-        .team-row { display: flex; align-items: center; justify-content: space-between; }
-        .t-info { display: flex; align-items: center; gap: 12px; }
-        .t-logo { width: 28px; height: 28px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px; }
-        .t-name { font-size: 15px; font-weight: 500; color: var(--txt-mute); }
+        .m-teams { padding: 0 15px; display: flex; flex-direction: column; gap: 8px; }
+        .t-row { display: flex; justify-content: space-between; align-items: center; }
+        .t-pkg { display: flex; align-items: center; gap: 10px; }
+        .t-logo { width: 22px; height: 22px; object-fit: contain; }
+        .t-name { font-size: 14px; color: var(--txt-mute); }
         .t-name.win { color: var(--txt); font-weight: 700; }
-        .score { font-size: 18px; font-weight: 800; color: var(--txt-mute); }
-        .score.win { color: var(--accent); }
+        .m-score { font-weight: 800; font-size: 16px; color: var(--txt-mute); }
+        .m-score.win { color: var(--accent); }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        @media (max-width: 900px) {
+        @media (max-width: 800px) {
             .wrapper { grid-template-columns: 1fr; }
             .side-nav { display: none; }
-            .match-body { grid-template-columns: 1fr; gap: 20px; }
-            .teams-col { border: none; padding: 0; }
+            .stats-bar { padding: 15px 5%; gap: 10px; }
         }
     </style>
 </head>
@@ -143,104 +109,71 @@
 
 <header>
     <div class="logo-area">
-        <div class="logo-ico">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#050507" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-        </div>
-        <div class="logo-txt">
-            <h1>ملعبي</h1>
-            <span id="live-clock">جاري التحميل...</span>
-        </div>
+        <div class="logo-ico">⚽</div>
+        <div class="logo-txt"><h1>ملعبي</h1></div>
     </div>
-    <div class="header-tools">
-        <button onclick="fetchData()" class="nav-btn" style="background: var(--accent); color: #050507; font-weight: 700; padding: 8px 20px; margin: 0;">تحديث</button>
-    </div>
+    <button onclick="fetchData()" style="background:var(--accent); border:none; padding:8px 15px; border-radius:8px; font-weight:700; cursor:pointer;">تحديث</button>
 </header>
 
 <div class="stats-bar">
-    <div class="stat-box live">
-        <span class="stat-num" id="s-live">0</span>
-        <span class="stat-lbl">مباشر الآن</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num" id="s-total">0</span>
-        <span class="stat-lbl">مباريات اليوم</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num" id="s-done">0</span>
-        <span class="stat-lbl">انتهت</span>
-    </div>
+    <div class="stat-box live"><span class="stat-num" id="s-live">0</span><span class="stat-lbl">مباشر</span></div>
+    <div class="stat-box"><span class="stat-num" id="s-total">0</span><span class="stat-lbl">اليوم</span></div>
+    <div class="stat-box"><span class="stat-num" id="s-done">0</span><span class="stat-lbl">انتهت</span></div>
 </div>
 
 <div class="wrapper">
     <aside class="side-nav">
-        <div class="nav-group">
-            <button class="nav-btn active" onclick="setLeague('all', this)"><span>🌍</span> جميع الدوريات <span class="badge" id="c-all">0</span></button>
-            <button class="nav-btn" onclick="setLeague('CL', this)"><span>🏆</span> دوري الأبطال <span class="badge" id="c-CL">0</span></button>
-            <button class="nav-btn" onclick="setLeague('PL', this)"><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> البريميرليغ <span class="badge" id="c-PL">0</span></button>
-            <button class="nav-btn" onclick="setLeague('PD', this)"><span>🇪🇸</span> الليغا <span class="badge" id="c-PD">0</span></button>
-            <button class="nav-btn" onclick="setLeague('SA', this)"><span>🇮🇹</span> الكالتشيو <span class="badge" id="c-SA">0</span></button>
-            <button class="nav-btn" onclick="setLeague('BL1', this)"><span>🇩🇪</span> البوندسليغا <span class="badge" id="c-BL1">0</span></button>
+        <div class="nav-group" id="league-menu">
+            <button class="nav-btn active" onclick="setFilter('all', this)">كل المباريات</button>
+            <button class="nav-btn" onclick="setFilter('CL', this)">دوري أبطال أوروبا</button>
+            <button class="nav-btn" onclick="setFilter('PL', this)">الدوري الإنجليزي</button>
+            <button class="nav-btn" onclick="setFilter('PD', this)">الدوري الإسباني</button>
+            <button class="nav-btn" onclick="setFilter('SA', this)">الدوري الإيطالي</button>
+            <button class="nav-btn" onclick="setFilter('BL1', this)">الدوري الألماني</button>
         </div>
     </aside>
 
     <main>
         <div class="controls">
-            <div class="search">
-                <input type="text" id="mSearch" placeholder="ابحث عن فريق أو بطولة..." oninput="render()">
-            </div>
-            <button class="nav-btn" id="live-toggle" onclick="toggleLive()" style="border: 1px solid var(--card-brd); min-width: 120px; justify-content: center;">● المباشر</button>
+            <div class="search"><input type="text" id="mSearch" placeholder="ابحث عن فريق..." oninput="render()"></div>
         </div>
-        <div id="match-list"></div>
+        <div id="match-list"><div style="text-align:center; padding:50px; color:var(--txt-mute);">جاري جلب النتائج...</div></div>
     </main>
 </div>
 
 <script>
     const KEY = '9b0890e8a1324b4e9161b2cac08666dd';
-    const COMPS = ['CL', 'PL', 'PD', 'SA', 'BL1', 'FL1'];
-    const NAMES = { CL: 'دوري أبطال أوروبا', PL: 'الدوري الإنجليزي الممتاز', PD: 'الدوري الإسباني', SA: 'الدوري الإيطالي', BL1: 'الدوري الألماني', FL1: 'الدوري الفرنسي' };
-
+    const COMPS = ['CL', 'PL', 'PD', 'SA', 'BL1'];
+    const NAMES = { CL: 'دوري أبطال أوروبا', PL: 'الدوري الإنجليزي', PD: 'الدوري الإسباني', SA: 'الدوري الإيطالي', BL1: 'الدوري الألماني' };
+    
     let matches = [];
-    let filterLg = 'all';
-    let onlyLive = false;
-
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('live-clock').textContent = now.toLocaleDateString('ar-SA', { weekday: 'long', day: 'numeric', month: 'long' });
-    }
-    updateClock();
+    let currentFilter = 'all';
 
     async function fetchData() {
         const today = new Date().toISOString().split('T')[0];
-        const list = document.getElementById('match-list');
-        list.innerHTML = '<div style="padding: 100px 0; text-align: center; color: var(--txt-mute);">جاري تحديث النتائج المباشرة...</div>';
-
-        try {
-            const reqs = COMPS.map(id => 
-                fetch(`https://api.football-data.org/v4/competitions/${id}/matches?dateFrom=${today}&dateTo=${today}`, {
+        matches = []; 
+        
+        for (const id of COMPS) {
+            try {
+                const res = await fetch(`https://api.football-data.org/v4/competitions/${id}/matches?dateFrom=${today}&dateTo=${today}`, {
                     headers: { 'X-Auth-Token': KEY }
-                }).then(res => res.json())
-            );
-
-            const res = await Promise.all(reqs);
-            matches = res.flatMap((data, i) => (data.matches || []).map(m => ({ ...m, lgId: COMPS[i] })));
-            
-            updateStats();
-            render();
-        } catch (e) {
-            list.innerHTML = '<div style="padding: 100px 0; text-align: center; color: var(--danger);">فشل جلب البيانات. يرجى التحديث بعد قليل.</div>';
+                });
+                const data = await res.json();
+                if (data.matches) {
+                    matches.push(...data.matches.map(m => ({ ...m, lgId: id })));
+                }
+                // تأخير بسيط لتجنب حظر الـ API
+                await new Promise(r => setTimeout(r, 500));
+            } catch (e) { console.error("Error loading " + id); }
         }
+        updateStats();
+        render();
     }
 
     function updateStats() {
-        const live = matches.filter(m => ['IN_PLAY', 'PAUSED', 'HALFTIME'].includes(m.status)).length;
-        document.getElementById('s-live').textContent = live;
+        document.getElementById('s-live').textContent = matches.filter(m => ['IN_PLAY','PAUSED','HALFTIME'].includes(m.status)).length;
         document.getElementById('s-total').textContent = matches.length;
         document.getElementById('s-done').textContent = matches.filter(m => m.status === 'FINISHED').length;
-        document.getElementById('c-all').textContent = matches.length;
-        COMPS.forEach(id => {
-            const el = document.getElementById('c-'+id);
-            if(el) el.textContent = matches.filter(m => m.lgId === id).length;
-        });
     }
 
     function render() {
@@ -248,14 +181,13 @@
         const query = document.getElementById('mSearch').value.toLowerCase();
         
         const filtered = matches.filter(m => {
-            const isLg = filterLg === 'all' || m.lgId === filterLg;
-            const isLive = !onlyLive || ['IN_PLAY', 'PAUSED', 'HALFTIME'].includes(m.status);
+            const isLg = currentFilter === 'all' || m.lgId === currentFilter;
             const isSearch = m.homeTeam.name.toLowerCase().includes(query) || m.awayTeam.name.toLowerCase().includes(query);
-            return isLg && isLive && isSearch;
+            return isLg && isSearch;
         });
 
-        if(!filtered.length) {
-            container.innerHTML = '<div style="text-align:center; padding:50px; color:var(--txt-mute)">لا توجد مباريات مطابقة حالياً</div>';
+        if (filtered.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:50px; color:var(--txt-mute);">لا توجد مباريات حالياً</div>';
             return;
         }
 
@@ -266,62 +198,50 @@
         }, {});
 
         container.innerHTML = Object.entries(groups).map(([lg, list]) => `
-            <div class="league-title"><span>●</span> ${NAMES[lg]}</div>
+            <div class="league-title">🏆 ${NAMES[lg]}</div>
             ${list.map(m => {
-                const isLive = ['IN_PLAY', 'PAUSED', 'HALFTIME'].includes(m.status);
+                const isLive = ['IN_PLAY','PAUSED','HALFTIME'].includes(m.status);
                 const hScore = m.score.fullTime.home;
                 const aScore = m.score.fullTime.away;
                 return `
-                    <div class="match-card">
-                        <div class="match-body">
-                            <div class="status-col">
-                                ${isLive ? `<span class="live-pulse">مباشر ${m.minute || ''}'</span>` : 
-                                  m.status === 'FINISHED' ? '<span class="m-time" style="color:var(--txt-mute)">انتهت</span>' :
-                                  `<span class="m-time">${new Date(m.utcDate).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</span>`}
+                <div class="match-card">
+                    <div class="m-status">
+                        ${isLive ? `<span class="live-tag">مباشر<br>${m.minute || ''}'</span>` : 
+                          m.status === 'FINISHED' ? 'انتهت' : 
+                          new Date(m.utcDate).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}
+                    </div>
+                    <div class="m-teams">
+                        <div class="t-row">
+                            <div class="t-pkg">
+                                <img src="${m.homeTeam.crest}" class="t-logo" onerror="this.src='https://via.placeholder.com/20'">
+                                <span class="t-name ${hScore > aScore ? 'win' : ''}">${m.homeTeam.name}</span>
                             </div>
-                            <div class="teams-col">
-                                <div class="team-row">
-                                    <div class="t-info">
-                                        <img src="${m.homeTeam.crest}" class="t-logo" onerror="this.src='https://via.placeholder.com/28'">
-                                        <span class="t-name ${hScore > aScore ? 'win' : ''}">${m.homeTeam.name}</span>
-                                    </div>
-                                    <span class="score ${hScore > aScore ? 'win' : ''}">${hScore ?? '-'}</span>
-                                </div>
-                                <div class="team-row">
-                                    <div class="t-info">
-                                        <img src="${m.awayTeam.crest}" class="t-logo" onerror="this.src='https://via.placeholder.com/28'">
-                                        <span class="t-name ${aScore > hScore ? 'win' : ''}">${m.awayTeam.name}</span>
-                                    </div>
-                                    <span class="score ${aScore > hScore ? 'win' : ''}">${aScore ?? '-'}</span>
-                                </div>
+                            <span class="m-score ${hScore > aScore ? 'win' : ''}">${hScore ?? '-'}</span>
+                        </div>
+                        <div class="t-row">
+                            <div class="t-pkg">
+                                <img src="${m.awayTeam.crest}" class="t-logo" onerror="this.src='https://via.placeholder.com/20'">
+                                <span class="t-name ${aScore > hScore ? 'win' : ''}">${m.awayTeam.name}</span>
                             </div>
-                            <div style="text-align: left; opacity: 0.3;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-                            </div>
+                            <span class="m-score ${aScore > hScore ? 'win' : ''}">${aScore ?? '-'}</span>
                         </div>
                     </div>
-                `;
-            }).join('')}
-        `).join('');
+                    <div style="text-align:center; opacity:0.2">◀</div>
+                </div>`;
+            }).join('')
+        }).join('');
     }
 
-    function setLeague(id, btn) {
+    function setFilter(id, btn) {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        filterLg = id;
-        render();
-    }
-
-    function toggleLive() {
-        onlyLive = !onlyLive;
-        const btn = document.getElementById('live-toggle');
-        btn.style.borderColor = onlyLive ? 'var(--danger)' : 'var(--card-brd)';
-        btn.style.color = onlyLive ? 'var(--danger)' : 'var(--txt-mute)';
+        currentFilter = id;
         render();
     }
 
     fetchData();
-    setInterval(fetchData, 60000);
+    setInterval(fetchData, 60000); // تحديث كل دقيقة
 </script>
+
 </body>
 </html>
