@@ -17,7 +17,7 @@
         .match-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border-right: 5px solid var(--accent); transition: 0.3s; }
         .team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .team img { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .team span { font-weight: bold; font-size: 0.9rem; }
+        .team span { font-weight: bold; font-size: 0.85rem; }
         .score-area { flex: 1; text-align: center; }
         .score { font-size: 1.8rem; font-weight: bold; color: var(--accent); letter-spacing: 5px; }
         .live-tag { background: var(--live); color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.75rem; animation: blink 1s infinite; display: inline-block; margin-top: 5px; }
@@ -47,7 +47,7 @@
     </div>
 
     <script>
-        // ضع مفتاحك الخاص هنا الذي وصلك في الإيميل
+        // الكود الخاص بك من الإيميل
         const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
         let currentLeague = 'PL';
 
@@ -55,36 +55,34 @@
             const container = document.getElementById('matches-container');
             container.innerHTML = '<div class="loading">جاري تحديث النتائج...</div>';
             
+            // استخدمنا هذا الرابط لتجاوز مشكلة الحظر (CORS)
+            const proxyUrl = 'https://corsproxy.io/?';
+            const targetUrl = `https://api.football-data.org/v4/competitions/${currentLeague}/matches`;
+
             try {
-                const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.football-data.org/v4/competitions/${currentLeague}/matches`)}`, {
+                const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
                     headers: { 'X-Auth-Token': API_KEY }
                 });
 
-                if (response.status === 429) {
-                    throw new Error('وصلت للحد الأقصى! انتظر دقيقة واحدة وحاول مجدداً.');
-                }
+                if (!response.ok) throw new Error('خطأ في الاتصال، انتظر دقيقة وجرب مجدداً.');
 
                 const data = await response.json();
                 renderMatches(data.matches);
             } catch (error) {
-                container.innerHTML = `
-                    <div class="error-msg">
-                        <p>⚠️ عذراً: ${error.message}</p>
-                        <p style="font-size: 0.8rem; margin-top:10px;">جرب تحديث الصفحة بعد قليل</p>
-                    </div>`;
+                container.innerHTML = `<div class="error-msg">⚠️ عذراً: ${error.message}</div>`;
             }
         }
 
         function renderMatches(matches) {
             const container = document.getElementById('matches-container');
             
-            // ترتيب المباريات: نعرض آخر 12 مباراة تم لعبها أو ستلعب قريباً
+            // عرض آخر 12 مباراة تم لعبها أو ستلعب
             const sortedMatches = matches
                 .sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
                 .slice(0, 12);
 
             if (!sortedMatches || sortedMatches.length === 0) {
-                container.innerHTML = '<div class="loading">لا توجد بيانات حالياً لهذا الدوري.</div>';
+                container.innerHTML = '<div class="loading">لا توجد مباريات مسجلة حالياً.</div>';
                 return;
             }
 
@@ -96,7 +94,7 @@
                 return `
                     <div class="match-card">
                         <div class="team">
-                            <img src="${match.homeTeam.crest}" onerror="this.src='https://via.placeholder.com/40?text=?'">
+                            <img src="${match.homeTeam.crest || ''}" onerror="this.src='https://via.placeholder.com/40?text=?'">
                             <span>${match.homeTeam.shortName || match.homeTeam.name}</span>
                         </div>
                         <div class="score-area">
@@ -108,7 +106,7 @@
                             </div>
                         </div>
                         <div class="team">
-                            <img src="${match.awayTeam.crest}" onerror="this.src='https://via.placeholder.com/40?text=?'">
+                            <img src="${match.awayTeam.crest || ''}" onerror="this.src='https://via.placeholder.com/40?text=?'">
                             <span>${match.awayTeam.shortName || match.awayTeam.name}</span>
                         </div>
                     </div>
@@ -117,14 +115,12 @@
         }
 
         function changeLeague(code, btn) {
-            if (btn.classList.contains('active')) return;
             currentLeague = code;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             fetchMatches();
         }
 
-        // تشغيل أول مرة
         fetchMatches();
     </script>
 </body>
