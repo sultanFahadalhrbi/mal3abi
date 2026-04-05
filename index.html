@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ملعبي Pro | VIP</title>
+<title>ملعبي | النتائج والترتيب</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -25,68 +25,79 @@
     body { background: var(--bg); color: var(--text-base); padding: 10px; padding-bottom: 70px; }
     
     header { text-align: center; margin-bottom: 20px; padding-top: 15px; }
-    header h1 { color: white; font-size: 2.3rem; text-shadow: 0 0 20px rgba(56,189,248,0.4); margin-bottom: 5px; font-weight: 700; }
-    .hint { font-size: 0.85rem; color: var(--text-muted); }
+    header h1 { color: white; font-size: 2.3rem; text-shadow: 0 0 20px rgba(56,189,248,0.4); font-weight: 700; }
+
+    /* أزرار التنقل (المباريات - الترتيب) */
+    .view-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+    .tab-btn { background: rgba(51, 65, 85, 0.4); border: 1px solid var(--border-color); color: var(--text-base); padding: 10px 30px; border-radius: 25px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.3s ease; }
+    .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 4px 15px rgba(56,189,248,0.3); }
+
+    /* أزرار الدوريات */
+    .nav-leagues { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px; }
+    .nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-base); padding: 8px 16px; border-radius: 12px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease; }
+    .nav-btn:hover { border-color: var(--accent); }
+    .nav-btn.active { background: var(--accent); color: #000; font-weight: bold; transform: scale(1.05); }
 
     /* شريط الشهور الزجاجي */
     .months-scroller-container { position: sticky; top: 0; z-index: 1000; margin-bottom: 20px; border-radius: 20px; overflow: hidden; }
-    .months-scroller { display: flex; gap: 12px; overflow-x: auto; padding: 20px 10px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); scrollbar-width: none; border-bottom: 1px solid var(--border-color); scroll-behavior: smooth; }
+    .months-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 15px 10px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); scrollbar-width: none; border-bottom: 1px solid var(--border-color); scroll-behavior: smooth; }
     .months-scroller::-webkit-scrollbar { display: none; }
-    .month-btn { background: rgba(51, 65, 85, 0.4); border: 1px solid var(--border-color); color: var(--text-base); padding: 10px 22px; border-radius: 50px; cursor: pointer; white-space: nowrap; font-size: 0.9rem; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .month-btn:hover { background: rgba(51, 65, 85, 0.7); }
-    .month-btn.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); transform: scale(1.05); box-shadow: 0 5px 15px rgba(56,189,248,0.3); }
-
-    /* أزرار الدوريات */
-    .nav-leagues { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 25px; }
-    .nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-base); padding: 10px 18px; border-radius: 15px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
-    .nav-btn:hover { border-color: var(--accent); }
-    .nav-btn.active { background: var(--accent); color: #000; font-weight: bold; transform: scale(1.05); box-shadow: 0 5px 15px rgba(56,189,248,0.2); }
+    .month-btn { background: rgba(51, 65, 85, 0.4); border: 1px solid var(--border-color); color: var(--text-base); padding: 8px 20px; border-radius: 50px; cursor: pointer; white-space: nowrap; font-size: 0.85rem; transition: all 0.3s ease; }
+    .month-btn.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); transform: scale(1.05); }
 
     /* شبكة المباريات التجاوبية */
-    #content { display: grid; grid-template-columns: 1fr; gap: 15px; }
-    @media (min-width: 600px) { #content { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
+    .matches-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    @media (min-width: 600px) { .matches-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
 
-    /* بطاقة المباراة المودرن */
-    .match-card { background: var(--card-bg); padding: 20px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; position: relative; transition: all 0.4s ease; border: 1px solid var(--border-color); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
-    .match-card.is-fav { border-color: var(--gold); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(30, 41, 59, 0.7)); box-shadow: 0 10px 25px var(--gold-glow); }
+    /* بطاقة المباراة */
+    .match-card { background: var(--card-bg); padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; position: relative; transition: all 0.3s ease; border: 1px solid var(--border-color); }
+    .match-card.is-fav { border-color: var(--gold); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(30, 41, 59, 0.7)); }
     
     .team { flex: 1; text-align: center; cursor: pointer; position: relative; padding: 8px; border-radius: 12px; transition: all 0.3s ease; }
-    .team:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
+    .team:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
     
-    /* شعار الفريق مع ظل متدرج خفي */
-    .crest-container { position: relative; width: 55px; height: 55px; margin: 0 auto; margin-bottom: 8px; }
-    .crest-container::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 10px; background: rgba(255,255,255,0.1); filter: blur(10px); border-radius: 50%; z-index: -1; }
-    .team-crest { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
-    .team-name { font-size: 0.85rem; font-weight: bold; color: white; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .crest-container { position: relative; width: 45px; height: 45px; margin: 0 auto; margin-bottom: 8px; }
+    .team-crest { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
+    .team-name { font-size: 0.8rem; font-weight: bold; color: white; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     
-    /* أيقونة القلب الأنيقة */
-    .fav-heart { position: absolute; top: -8px; right: -8px; font-size: 1rem; color: #475569; transition: all 0.3s ease; opacity: 0.5; }
-    .is-following .fav-heart { color: var(--fav-color); opacity: 1; text-shadow: 0 0 15px var(--fav-color); transform: scale(1.15); }
+    .fav-heart { position: absolute; top: -5px; right: -5px; font-size: 1rem; color: #475569; transition: all 0.3s ease; opacity: 0.5; }
+    .is-following .fav-heart { color: var(--fav-color); opacity: 1; text-shadow: 0 0 10px var(--fav-color); transform: scale(1.2); }
 
-    .score-area { flex: 1; text-align: center; padding: 0 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .score { font-size: 2.1rem; color: var(--accent); font-weight: bold; letter-spacing: 3px; font-family: 'Noto Sans Arabic', sans-serif; text-shadow: 0 0 10px rgba(56,189,248,0.3); }
-    .status-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; display: block; }
-    .live-badge { color: white; background: var(--live-color); padding: 3px 10px; border-radius: 7px; font-size: 0.75rem; animation: blink 1.5s infinite; font-weight: bold; box-shadow: 0 0 10px var(--live-color); }
+    .score-area { flex: 1; text-align: center; padding: 0 10px; }
+    .score { font-size: 1.8rem; color: var(--accent); font-weight: bold; letter-spacing: 2px; }
+    .status-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; display: block; }
+    .live-badge { color: white; background: var(--live-color); padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; animation: blink 1.5s infinite; font-weight: bold; }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* جدول الترتيب */
+    .standings-wrapper { width: 100%; overflow-x: auto; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); padding-bottom: 5px; }
+    .standings-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; white-space: nowrap; }
+    .standings-table th { background: rgba(15, 23, 42, 0.6); padding: 12px 10px; color: var(--accent); font-weight: bold; border-bottom: 2px solid var(--border-color); }
+    .standings-table td { padding: 12px 10px; border-bottom: 1px solid rgba(51, 65, 85, 0.3); }
+    .standings-table tr:hover { background: rgba(255,255,255,0.03); cursor: pointer; }
+    .standings-table tr:last-child td { border-bottom: none; }
+    .team-cell { display: flex; align-items: center; gap: 10px; text-align: right; font-weight: bold; }
+    .team-cell img { width: 25px; height: 25px; object-fit: contain; }
+    .pts-cell { font-weight: bold; color: var(--accent); font-size: 1rem; }
+    .is-fav-row { background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), transparent); border-right: 4px solid var(--gold); }
+    .group-title { margin: 25px 0 10px; color: white; font-size: 1.1rem; padding-right: 15px; border-right: 4px solid var(--accent); }
 
     .loader { border: 4px solid #334155; border-top: 4px solid var(--accent); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 50px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .toast { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 14px 28px; border-radius: 35px; font-weight: bold; z-index: 2000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-size: 0.95rem; transition: all 0.4s ease; opacity: 0; transform: translateX(-50%) translateY(20px); }
-    
-    .retry-btn { background: var(--accent); color: #000; border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 0.9rem; transition: all 0.3s ease; }
-    .retry-btn:hover { background: white; transform: scale(1.05); }
+    .toast { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.3); font-size: 0.9rem; transition: all 0.3s ease; opacity: 0; transform: translateX(-50%) translateY(20px); }
+    .retry-btn { background: var(--accent); color: #000; border: none; padding: 8px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; }
 </style>
 </head>
 <body>
 
 <header>
-    <h1>⚽ ملعبي Pro</h1>
-    <p class="hint">اضغط على الفريق لتفضيله ومتابعته ❤️</p>
+    <h1>⚽ ملعبي</h1>
 </header>
 
-<div class="months-scroller-container">
-    <div class="months-scroller" id="months-bar"></div>
+<div class="view-tabs">
+    <button class="tab-btn active" onclick="switchView('matches', this)">المباريات</button>
+    <button class="tab-btn" onclick="switchView('standings', this)">ترتيب الدوري</button>
 </div>
 
 <div class="nav-leagues">
@@ -97,6 +108,10 @@
     <button class="nav-btn" onclick="changeLeague('FL1', this)">الفرنسي</button>
 </div>
 
+<div class="months-scroller-container" id="months-container">
+    <div class="months-scroller" id="months-bar"></div>
+</div>
+
 <div id="content">
     <div class="loader"></div>
 </div>
@@ -104,6 +119,7 @@
 <script>
 const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
 let currentLeague = 'PL';
+let currentView = 'matches'; // 'matches' أو 'standings'
 let selectedMonth = new Date().getMonth(); 
 let followedTeams = JSON.parse(localStorage.getItem('followedTeams')) || [];
 
@@ -129,35 +145,45 @@ function showToast(msg) {
     if (existing) existing.remove();
     const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
     document.body.appendChild(t);
-    setTimeout(() => t.style.opacity = '1', 50); // إظهار تدريجي
-    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; setTimeout(() => t.remove(), 400); }, 2000); // إخفاء تدريجي
+    setTimeout(() => t.style.opacity = '1', 50); 
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; setTimeout(() => t.remove(), 400); }, 2000);
 }
 
 async function load() {
     const content = document.getElementById('content');
     content.innerHTML = '<div class="loader"></div>';
+    
+    // إخفاء شريط الشهور إذا كنا في صفحة الترتيب
+    document.getElementById('months-container').style.display = currentView === 'matches' ? 'block' : 'none';
+
     try {
-        const url = `https://api.football-data.org/v4/competitions/${currentLeague}/matches`;
+        const endpoint = currentView === 'matches' ? 'matches' : 'standings';
+        const url = `https://api.football-data.org/v4/competitions/${currentLeague}/${endpoint}`;
         const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {
             headers: { 'X-Auth-Token': API_KEY }
         });
         
-        if (res.status === 429) throw new Error("عذراً، تم الوصول للحد الأقصى للطلبات. انتظر دقيقة.");
-        if (res.status === 403) throw new Error("هذا الدوري غير متاح حالياً في الخطة المجانية.");
-        if (!res.ok) throw new Error("السيرفر مضغوط، جرب تحديث الصفحة بعد قليل.");
+        if (res.status === 429) throw new Error("تم الوصول للحد الأقصى للطلبات. انتظر دقيقة.");
+        if (res.status === 403) throw new Error("هذا الدوري مقفل حالياً.");
+        if (!res.ok) throw new Error("السيرفر مضغوط، جرب تحديث الصفحة.");
         
         const data = await res.json();
-        render(data.matches);
+        
+        if (currentView === 'matches') {
+            renderMatches(data.matches);
+        } else {
+            renderStandings(data.standings);
+        }
     } catch (error) {
         content.innerHTML = `
-            <div style='text-align:center; padding:30px; grid-column: 1 / -1;'>
+            <div style='text-align:center; padding:30px;'>
                 <p style='color:#ef4444; font-size:1.1rem; font-weight:700;'>⚠️ ${error.message}</p>
-                <button class="retry-btn" onclick="load()">🔄 تحديث الصفحة</button>
+                <button class="retry-btn" onclick="load()">🔄 تحديث</button>
             </div>`;
     }
 }
 
-function render(matches) {
+function renderMatches(matches) {
     const filtered = matches.filter(m => new Date(m.utcDate).getMonth() === selectedMonth);
 
     const sorted = filtered.sort((a, b) => {
@@ -181,47 +207,100 @@ function render(matches) {
 
         return `
             <div class="match-card ${isFavMatch ? 'is-fav' : ''}">
-                <div class="team ${homeFav ? 'is-following' : ''}" onclick="toggleFollow(${m.homeTeam.id}, '${m.homeTeam.shortName || m.homeTeam.name}', event)">
+                <div class="team ${homeFav ? 'is-following' : ''}" onclick="toggleFollow(${m.homeTeam.id}, '${m.homeTeam.shortName || m.homeTeam.name}')">
                     <div class="fav-heart">❤️</div>
-                    <div class="crest-container">
-                        <img class="team-crest" src="${m.homeTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'">
-                    </div>
+                    <div class="crest-container"><img class="team-crest" src="${m.homeTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'"></div>
                     <div class="team-name">${m.homeTeam.shortName || m.homeTeam.name}</div>
                 </div>
                 
                 <div class="score-area">
                     <div class="score">${isFinished || isLive ? (m.score.fullTime.home ?? 0) + ' - ' + (m.score.fullTime.away ?? 0) : 'VS'}</div>
-                    <span class="status-label">
-                        ${isLive ? '<span class="live-badge">مباشر 🔴</span>' : `${dateStr} | ${timeStr}`}
-                    </span>
+                    <span class="status-label">${isLive ? '<span class="live-badge">مباشر 🔴</span>' : `${dateStr} | ${timeStr}`}</span>
                 </div>
 
-                <div class="team ${awayFav ? 'is-following' : ''}" onclick="toggleFollow(${m.awayTeam.id}, '${m.awayTeam.shortName || m.awayTeam.name}', event)">
+                <div class="team ${awayFav ? 'is-following' : ''}" onclick="toggleFollow(${m.awayTeam.id}, '${m.awayTeam.shortName || m.awayTeam.name}')">
                     <div class="fav-heart">❤️</div>
-                    <div class="crest-container">
-                        <img class="team-crest" src="${m.awayTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'">
-                    </div>
+                    <div class="crest-container"><img class="team-crest" src="${m.awayTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'"></div>
                     <div class="team-name">${m.awayTeam.shortName || m.awayTeam.name}</div>
                 </div>
             </div>
         `;
     }).join('');
 
-    document.getElementById('content').innerHTML = html || `<div style="text-align:center; padding:40px; color:var(--text-muted); grid-column: 1 / -1;">لا توجد مباريات مجدولة في هذا الشهر 📅</div>`;
+    document.getElementById('content').innerHTML = `<div class="matches-grid">${html}</div>` || `<div style="text-align:center; padding:40px; color:var(--text-muted);">لا توجد مباريات في هذا الشهر 📅</div>`;
 }
 
-function toggleFollow(id, name, event) {
-    event.stopPropagation();
+function renderStandings(standingsData) {
+    let html = '';
+    
+    standingsData.forEach(group => {
+        if(group.type !== 'TOTAL') return; // تجاهل ترتيب الذهاب والإياب المنفصل
+        
+        if(group.group) {
+            html += `<h3 class="group-title">${group.group.replace('_', ' ')}</h3>`;
+        }
+
+        html += `
+        <div class="standings-wrapper">
+            <table class="standings-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th style="text-align: right;">الفريق</th>
+                        <th>لعب</th>
+                        <th>ف</th>
+                        <th>ت</th>
+                        <th>خ</th>
+                        <th>+/-</th>
+                        <th>نقاط</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        html += group.table.map(row => {
+            const isFav = followedTeams.includes(row.team.id);
+            return `
+                <tr class="${isFav ? 'is-fav-row' : ''}" onclick="toggleFollow(${row.team.id}, '${row.team.shortName || row.team.name}')">
+                    <td>${row.position}</td>
+                    <td class="team-cell">
+                        <img src="${row.team.crest}" onerror="this.src='https://via.placeholder.com/25?text=⚽'">
+                        <span>${row.team.shortName || row.team.name} ${isFav ? '❤️' : ''}</span>
+                    </td>
+                    <td>${row.playedGames}</td>
+                    <td>${row.won}</td>
+                    <td>${row.draw}</td>
+                    <td>${row.lost}</td>
+                    <td dir="ltr">${row.goalDifference}</td>
+                    <td class="pts-cell">${row.points}</td>
+                </tr>
+            `;
+        }).join('');
+
+        html += `</tbody></table></div>`;
+    });
+
+    document.getElementById('content').innerHTML = html;
+}
+
+function toggleFollow(id, name) {
     const index = followedTeams.indexOf(id);
     if (index > -1) {
         followedTeams.splice(index, 1);
         showToast("💔 أزلنا " + name);
     } else {
         followedTeams.push(id);
-        showToast("❤️ نتابع الحين " + name);
+        showToast("❤️ نتابع " + name);
     }
     localStorage.setItem('followedTeams', JSON.stringify(followedTeams));
     load(); 
+}
+
+function switchView(view, btn) {
+    currentView = view;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    load();
 }
 
 function changeMonth(m, btn) {
