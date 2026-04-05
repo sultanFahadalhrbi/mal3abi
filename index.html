@@ -42,17 +42,19 @@
     .matches-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 600px) { .matches-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
 
-    .match-card { background: var(--card-bg); padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; position: relative; transition: all 0.3s ease; border: 1px solid var(--border-color); }
+    /* المباراة صارت قابلة للضغط بالكامل */
+    .match-card { background: var(--card-bg); padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; position: relative; transition: all 0.3s ease; border: 1px solid var(--border-color); cursor: pointer; }
+    .match-card:hover { border-color: var(--accent); transform: translateY(-2px); }
     .match-card.is-fav { border-color: var(--gold); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(30, 41, 59, 0.7)); }
     
-    .team { flex: 1; text-align: center; cursor: pointer; position: relative; padding: 8px; border-radius: 12px; transition: all 0.3s ease; }
-    .team:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+    .team { flex: 1; text-align: center; position: relative; padding: 8px; border-radius: 12px; transition: all 0.3s ease; z-index: 2; }
+    .team:hover { background: rgba(255,255,255,0.05); }
     
     .crest-container { position: relative; width: 45px; height: 45px; margin: 0 auto; margin-bottom: 8px; }
     .team-crest { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
     .team-name { font-size: 0.8rem; font-weight: bold; color: white; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     
-    .fav-heart { position: absolute; top: -5px; right: -5px; font-size: 1rem; color: #475569; transition: all 0.3s ease; opacity: 0.5; }
+    .fav-heart { position: absolute; top: -5px; right: -5px; font-size: 1.2rem; color: #475569; transition: all 0.3s ease; opacity: 0.6; z-index: 5; }
     .is-following .fav-heart { color: var(--fav-color); opacity: 1; text-shadow: 0 0 10px var(--fav-color); transform: scale(1.2); }
 
     .score-area { flex: 1; text-align: center; padding: 0 10px; }
@@ -78,31 +80,40 @@
     .loader { border: 4px solid #334155; border-top: 4px solid var(--accent); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 50px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .toast { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 4000; box-shadow: 0 10px 20px rgba(0,0,0,0.3); font-size: 0.9rem; transition: all 0.3s ease; opacity: 0; transform: translateX(-50%) translateY(20px); pointer-events: none; }
+    .toast { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 5000; box-shadow: 0 10px 20px rgba(0,0,0,0.3); font-size: 0.9rem; transition: all 0.3s ease; opacity: 0; transform: translateX(-50%) translateY(20px); pointer-events: none; }
     
-    .retry-btn { background: var(--accent); color: #000; border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(56,189,248,0.3); }
-
-    /* 🌟 تصميم نافذة الفريق (Modal) */
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 3000; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
-    .modal-content { background: var(--bg); width: 100%; max-width: 600px; height: 85vh; border-radius: 30px 30px 0 0; border-top: 2px solid var(--accent); display: flex; flex-direction: column; overflow: hidden; animation: slideUp 0.4s ease; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+    /* 🌟 النوافذ المنبثقة (الفريق & المباراة) 🌟 */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 3000; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(8px); }
+    .modal-content { background: var(--bg); width: 100%; max-width: 600px; height: 90vh; border-radius: 30px 30px 0 0; border-top: 2px solid var(--accent); display: flex; flex-direction: column; overflow: hidden; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -10px 40px rgba(0,0,0,0.6); }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    
     .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--card-bg); }
     .modal-title { display: flex; align-items: center; gap: 15px; font-size: 1.2rem; font-weight: bold; color: white; }
     .modal-title img { width: 40px; height: 40px; object-fit: contain; }
-    .close-btn { background: rgba(239, 68, 68, 0.2); color: var(--fav-color); border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+    .close-btn { background: rgba(255, 255, 255, 0.1); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
     .close-btn:hover { background: var(--fav-color); color: white; }
-    .modal-tabs { display: flex; background: var(--card-bg); }
-    .m-tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: bold; color: var(--text-muted); border-bottom: 3px solid transparent; transition: 0.3s; }
-    .m-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(56, 189, 248, 0.05); }
-    .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
     
+    .modal-tabs { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border-color); }
+    .m-tab { flex: 1; text-align: center; padding: 15px 5px; cursor: pointer; font-weight: bold; color: var(--text-muted); border-bottom: 3px solid transparent; transition: 0.3s; font-size: 0.9rem; }
+    .m-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(56, 189, 248, 0.05); }
+    .modal-body { flex: 1; overflow-y: auto; padding: 20px; background: var(--bg); }
+    
+    /* ستايلات اللاعبين */
     .player-card { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid var(--border-color); }
     .player-info { display: flex; flex-direction: column; }
     .player-name { font-weight: bold; color: white; margin-bottom: 4px; font-size: 0.95rem; }
     .player-pos { font-size: 0.75rem; color: var(--accent); }
     .player-nat { font-size: 0.8rem; color: var(--text-muted); }
     
-    .modal-match { background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); padding: 12px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    /* ستايلات المباراة المصغرة */
+    .modal-match { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+    .modal-match:hover { border-color: var(--accent); }
+    
+    /* ميزة مدفوعة (القفل) */
+    .premium-lock { text-align: center; padding: 40px 20px; color: var(--text-muted); background: var(--card-bg); border-radius: 20px; border: 1px dashed var(--border-color); margin-top: 20px; }
+    .premium-lock span { font-size: 3rem; display: block; margin-bottom: 15px; opacity: 0.8; }
+    .premium-lock h3 { color: white; margin-bottom: 10px; }
+    .premium-lock p { font-size: 0.85rem; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -132,43 +143,48 @@
     <div class="loader"></div>
 </div>
 
-<div id="team-modal" class="modal-overlay" onclick="closeModal(event)">
+<div id="match-modal" class="modal-overlay" onclick="closeMatchModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <div class="modal-title" id="modal-title-content">
-                <span>جاري التحميل...</span>
-            </div>
-            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div class="modal-title" id="match-modal-title">مركز المباراة</div>
+            <button class="close-btn" onclick="closeMatchModal()">&times;</button>
         </div>
         <div class="modal-tabs">
-            <div class="m-tab active" onclick="switchModalTab('squad', this)">التشكيلة والمدرب</div>
-            <div class="m-tab" onclick="switchModalTab('matches', this)">المباريات</div>
+            <div class="m-tab active" onclick="switchMatchTab('events', this)">أحداث المباراة</div>
+            <div class="m-tab" onclick="switchMatchTab('lineups', this)">التشكيلة</div>
+            <div class="m-tab" onclick="switchMatchTab('stats', this)">الإحصائيات</div>
         </div>
-        <div class="modal-body" id="modal-body-content"></div>
+        <div class="modal-body" id="match-modal-body"></div>
+    </div>
+</div>
+
+<div id="team-modal" class="modal-overlay" onclick="closeTeamModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="team-modal-title">
+                <span>جاري التحميل...</span>
+            </div>
+            <button class="close-btn" onclick="closeTeamModal()">&times;</button>
+        </div>
+        <div class="modal-tabs">
+            <div class="m-tab active" onclick="switchTeamTab('matches', this)">المباريات</div>
+            <div class="m-tab" onclick="switchTeamTab('squad', this)">التشكيلة</div>
+            <div class="m-tab" onclick="switchTeamTab('transfers', this)">الانتقالات</div>
+        </div>
+        <div class="modal-body" id="team-modal-body"></div>
     </div>
 </div>
 
 <script>
-window.onerror = function(msg) {
-    document.getElementById('content').innerHTML = `<div style="color:#ef4444; text-align:center; padding:20px;">خطأ: ${msg}</div>`;
-};
+window.onerror = function(msg) { console.log("Error:", msg); };
 
 const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
 let currentLeague = 'PL';
 let currentView = 'matches'; 
 let selectedMonth = new Date().getMonth(); 
 
-let followedTeams = [];
-try {
-    const saved = localStorage.getItem('followedTeams');
-    if (saved) followedTeams = JSON.parse(saved);
-    if (!Array.isArray(followedTeams)) followedTeams = [];
-} catch (e) {
-    localStorage.removeItem('followedTeams');
-    followedTeams = [];
-}
-
-const cache = { matches: {}, standings: {}, teams: {}, teamMatches: {} };
+let followedTeams = JSON.parse(localStorage.getItem('followedTeams')) || [];
+const cache = { matches: {}, standings: {}, teams: {}, teamMatches: {}, matchDetails: {} };
 const monthsNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
 const seasonMonths = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]; 
 
@@ -176,15 +192,10 @@ function renderMonthsBar() {
     const bar = document.getElementById('months-bar');
     if(!bar) return;
     bar.innerHTML = seasonMonths.map(m => `
-        <button class="month-btn ${m === selectedMonth ? 'active' : ''}" onclick="changeMonth(${m}, this)" id="month-${m}">
+        <button class="month-btn ${m === selectedMonth ? 'active' : ''}" onclick="changeMonth(${m}, this)">
             ${monthsNames[m]}
         </button>
     `).join('');
-    
-    setTimeout(() => {
-        const activeBtn = document.querySelector('.month-btn.active');
-        if(activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }, 100);
 }
 
 function showToast(msg) {
@@ -198,50 +209,35 @@ function showToast(msg) {
 
 async function loadData() {
     const content = document.getElementById('content');
-    if(!content) return;
-    
     document.getElementById('months-container').style.display = currentView === 'matches' ? 'block' : 'none';
 
-    if (cache[currentView][currentLeague]) {
-        renderData();
-        return;
-    }
+    if (cache[currentView][currentLeague]) { renderData(); return; }
 
     content.innerHTML = '<div class="loader"></div>';
 
     try {
         const targetUrl = `https://api.football-data.org/v4/competitions/${currentLeague}/${currentView}`;
-        const proxies = [
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            `https://thingproxy.freeboard.io/fetch/${targetUrl}`
-        ];
+        const proxies = [`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`, `https://thingproxy.freeboard.io/fetch/${targetUrl}`];
 
-        let res;
-        let success = false;
-
+        let res; let success = false;
         for (let proxy of proxies) {
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 8000);
                 res = await fetch(proxy, { headers: { 'X-Auth-Token': API_KEY }, signal: controller.signal });
                 clearTimeout(timeoutId);
-                
-                if (res.ok || res.status === 429 || res.status === 403) {
-                    success = true; break;
-                }
+                if (res.ok) { success = true; break; }
             } catch (e) { continue; }
         }
 
-        if (!success) throw new Error("الشبكة ضعيفة أو تحظر السيرفر 🌐");
-        if (res.status === 429) throw new Error("ضغط على السيرفر! انتظر دقيقة ⏱️");
-        if (res.status === 403) throw new Error("الدوري محظور 🔒");
+        if (!success) throw new Error("فشل الاتصال بمزود البيانات");
         
         const data = await res.json();
         cache[currentView][currentLeague] = currentView === 'matches' ? data.matches : data.standings;
         renderData();
 
     } catch (error) {
-        content.innerHTML = `<div style='text-align:center; padding:30px;'><p style='color:#ef4444; font-size:1.1rem; font-weight:700;'>⚠️ ${error.message}</p><button class="retry-btn" onclick="loadData()">إعادة المحاولة 🔄</button></div>`;
+        content.innerHTML = `<div style='text-align:center; padding:30px; color:#ef4444;'>⚠️ ${error.message}</div>`;
     }
 }
 
@@ -251,57 +247,45 @@ function renderData() {
 }
 
 function renderMatches(matches) {
-    if(!matches || matches.length === 0) {
-        document.getElementById('content').innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">لا توجد بيانات حالياً 📅</div>`;
-        return;
-    }
-
     const filtered = matches.filter(m => new Date(m.utcDate).getMonth() === selectedMonth);
-    const sorted = filtered.sort((a, b) => {
-        const aFav = followedTeams.includes(a.homeTeam.id) || followedTeams.includes(a.awayTeam.id);
-        const bFav = followedTeams.includes(b.homeTeam.id) || followedTeams.includes(b.awayTeam.id);
-        if (aFav && !bFav) return -1;
-        if (!aFav && bFav) return 1;
-        return new Date(a.utcDate) - new Date(b.utcDate);
-    });
+    const sorted = filtered.sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
 
     let html = '';
     sorted.forEach((m) => {
         const homeFav = followedTeams.includes(m.homeTeam.id);
         const awayFav = followedTeams.includes(m.awayTeam.id);
-        const isFavMatch = homeFav || awayFav;
         const d = new Date(m.utcDate);
-        const dateStr = d.toLocaleDateString('ar-SA', {month:'short', day:'numeric'});
-        const timeStr = d.toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
         const isLive = m.status === 'IN_PLAY' || m.status === 'PAUSED';
-        const isFinished = m.status === 'FINISHED';
-
+        
+        // بطاقة المباراة قابلة للضغط لتفتح (مركز المباراة)
         html += `
-            <div class="match-card ${isFavMatch ? 'is-fav' : ''}">
-                <div class="team ${homeFav ? 'is-following' : ''}" onclick="toggleFollow(${m.homeTeam.id}, '${(m.homeTeam.shortName || m.homeTeam.name).replace(/'/g, "\\'")}', event)">
-                    <div class="fav-heart">❤️</div>
-                    <div class="crest-container"><img class="team-crest" src="${m.homeTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'"></div>
+            <div class="match-card ${homeFav || awayFav ? 'is-fav' : ''}" onclick="openMatchProfile(${m.id})">
+                
+                <div class="team" onclick="openTeamProfile(${m.homeTeam.id}); event.stopPropagation();">
+                    <div class="fav-heart ${homeFav ? 'is-following' : ''}" onclick="toggleFollow(${m.homeTeam.id}, '${(m.homeTeam.shortName || m.homeTeam.name).replace(/'/g, "\\'")}', event)">${homeFav ? '❤️' : '🤍'}</div>
+                    <div class="crest-container"><img class="team-crest" src="${m.homeTeam.crest || 'https://via.placeholder.com/45?text=⚽'}"></div>
                     <div class="team-name">${m.homeTeam.shortName || m.homeTeam.name}</div>
                 </div>
+
                 <div class="score-area">
-                    <div class="score">${isFinished || isLive ? (m.score.fullTime.home ?? 0) + ' - ' + (m.score.fullTime.away ?? 0) : 'VS'}</div>
-                    <span class="status-label">${isLive ? '<span class="live-badge">مباشر 🔴</span>' : `${dateStr} | ${timeStr}`}</span>
+                    <div class="score">${m.status === 'FINISHED' || isLive ? (m.score.fullTime.home ?? 0) + ' - ' + (m.score.fullTime.away ?? 0) : 'VS'}</div>
+                    <span class="status-label">${isLive ? '<span class="live-badge">مباشر 🔴</span>' : `${d.toLocaleDateString('ar-SA')} | ${d.toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'})}`}</span>
                 </div>
-                <div class="team ${awayFav ? 'is-following' : ''}" onclick="toggleFollow(${m.awayTeam.id}, '${(m.awayTeam.shortName || m.awayTeam.name).replace(/'/g, "\\'")}', event)">
-                    <div class="fav-heart">❤️</div>
-                    <div class="crest-container"><img class="team-crest" src="${m.awayTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'"></div>
+
+                <div class="team" onclick="openTeamProfile(${m.awayTeam.id}); event.stopPropagation();">
+                    <div class="fav-heart ${awayFav ? 'is-following' : ''}" onclick="toggleFollow(${m.awayTeam.id}, '${(m.awayTeam.shortName || m.awayTeam.name).replace(/'/g, "\\'")}', event)">${awayFav ? '❤️' : '🤍'}</div>
+                    <div class="crest-container"><img class="team-crest" src="${m.awayTeam.crest || 'https://via.placeholder.com/45?text=⚽'}"></div>
                     <div class="team-name">${m.awayTeam.shortName || m.awayTeam.name}</div>
                 </div>
+
             </div>
         `;
     });
 
-    document.getElementById('content').innerHTML = html ? `<div class="matches-grid">${html}</div>` : `<div style="text-align:center; padding:40px; color:var(--text-muted);">لا توجد مباريات في هذا الشهر 📅</div>`;
+    document.getElementById('content').innerHTML = html ? `<div class="matches-grid">${html}</div>` : `<div style="text-align:center; padding:40px; color:var(--text-muted);">لا توجد مباريات 📅</div>`;
 }
 
 function renderStandings(standingsData) {
-    if(!standingsData || standingsData.length === 0) return;
-    
     let html = '';
     standingsData.forEach(group => {
         if(group.type !== 'TOTAL') return; 
@@ -313,8 +297,7 @@ function renderStandings(standingsData) {
                 <tr class="${isFav ? 'is-fav-row' : ''}">
                     <td>${row.position}</td>
                     <td class="team-cell" onclick="openTeamProfile(${row.team.id})">
-                        <img src="${row.team.crest}" onerror="this.src='https://via.placeholder.com/25?text=⚽'">
-                        <span>${row.team.shortName || row.team.name}</span>
+                        <img src="${row.team.crest}"><span>${row.team.shortName || row.team.name}</span>
                     </td>
                     <td>${row.playedGames}</td><td>${row.won}</td><td>${row.draw}</td><td>${row.lost}</td><td dir="ltr">${row.goalDifference}</td><td class="pts-cell">${row.points}</td>
                     <td class="follow-btn" onclick="toggleFollow(${row.team.id}, '${(row.team.shortName || row.team.name).replace(/'/g, "\\'")}', event)">${isFav ? '❤️' : '🤍'}</td>
@@ -322,557 +305,143 @@ function renderStandings(standingsData) {
         }).join('');
         html += `</tbody></table></div>`;
     });
-    
     document.getElementById('content').innerHTML = html;
 }
 
 function toggleFollow(id, name, event) {
-    if(event) event.stopPropagation(); // منع فتح الملف عند ضغط القلب
+    if(event) event.stopPropagation(); 
     const index = followedTeams.indexOf(id);
-    if (index > -1) {
-        followedTeams.splice(index, 1);
-        showToast("💔 أزلنا " + name);
-    } else {
-        followedTeams.push(id);
-        showToast("❤️ نتابع " + name);
-    }
+    if (index > -1) { followedTeams.splice(index, 1); showToast("💔 أزلنا " + name); } 
+    else { followedTeams.push(id); showToast("❤️ نتابع " + name); }
     localStorage.setItem('followedTeams', JSON.stringify(followedTeams));
     renderData(); 
 }
 
-// 🌟 أكواد ملف الفريق (Team Profile)
-let currentTeamData = null;
-let currentModalTab = 'squad';
+/* =========================================
+   🏟️ أكواد نافذة المباراة (Match Center)
+========================================= */
+let currentMatchData = null;
+let currentMatchTab = 'events';
 
-async function openTeamProfile(teamId) {
-    document.getElementById('team-modal').style.display = 'flex';
-    document.getElementById('modal-title-content').innerHTML = '<span>جاري التحميل...</span>';
-    document.getElementById('modal-body-content').innerHTML = '<div class="loader"></div>';
+async function openMatchProfile(matchId) {
+    document.getElementById('match-modal').style.display = 'flex';
+    document.getElementById('match-modal-body').innerHTML = '<div class="loader"></div>';
     
-    currentModalTab = 'squad';
-    document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.m-tab')[0].classList.add('active');
+    currentMatchTab = 'events';
+    document.querySelectorAll('#match-modal .m-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#match-modal .m-tab')[0].classList.add('active');
 
     try {
-        // جلب معلومات الفريق واللاعبين
-        if(!cache.teams[teamId]) {
-            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.football-data.org/v4/teams/' + teamId)}`, {headers: {'X-Auth-Token': API_KEY}});
-            if(!res.ok) throw new Error();
-            cache.teams[teamId] = await res.json();
+        if(!cache.matchDetails[matchId]) {
+            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.football-data.org/v4/matches/' + matchId)}`, {headers: {'X-Auth-Token': API_KEY}});
+            if(res.ok) cache.matchDetails[matchId] = await res.json();
         }
-        
-        // جلب مباريات الفريق
-        if(!cache.teamMatches[teamId]) {
-            const mRes = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.football-data.org/v4/teams/' + teamId + '/matches?limit=30')}`, {headers: {'X-Auth-Token': API_KEY}});
-            if(mRes.ok) {
-                const mData = await mRes.json();
-                cache.teamMatches[teamId] = mData.matches;
-            }
-        }
-
-        currentTeamData = { info: cache.teams[teamId], matches: cache.teamMatches[teamId] || [] };
-
-        document.getElementById('modal-title-content').innerHTML = `
-            <img src="${currentTeamData.info.crest}">
-            <span>${currentTeamData.info.shortName || currentTeamData.info.name}</span>
-        `;
-        renderModalContent();
-
+        currentMatchData = cache.matchDetails[matchId];
+        renderMatchModalContent();
     } catch (e) {
-        document.getElementById('modal-body-content').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px; font-weight:bold;">❌ فشل تحميل بيانات الفريق</div>';
+        document.getElementById('match-modal-body').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">❌ فشل تحميل تفاصيل المباراة</div>';
     }
 }
 
-function renderModalContent() {
-    const body = document.getElementById('modal-body-content');
-    if(!currentTeamData) return;
+function renderMatchModalContent() {
+    const body = document.getElementById('match-modal-body');
+    if(!currentMatchData) return;
 
-    if(currentModalTab === 'squad') {
-        const squad = currentTeamData.info.squad;
-        const coach = currentTeamData.info.coach;
-        let html = '';
-        
-        if(coach && coach.name) {
-            html += `<div class="player-card" style="border-color:var(--gold); border-width:2px;">
-                <div class="player-info"><span class="player-name">👔 ${coach.name}</span><span class="player-pos">المدرب (Coach)</span></div>
-                <div class="player-nat">${coach.nationality || ''}</div>
-            </div>`;
-        }
-
-        if(squad && squad.length > 0) {
-            html += squad.map(p => `
-                <div class="player-card">
-                    <div class="player-info"><span class="player-name">${p.name}</span><span class="player-pos">${p.position || 'لاعب'}</span></div>
-                    <div class="player-nat">${p.nationality || ''}</div>
-                </div>
-            `).join('');
-        } else {
-            html += '<div style="text-align:center; padding:20px; color:var(--text-muted);">بيانات اللاعبين غير متوفرة</div>';
-        }
-        body.innerHTML = html;
-
-    } else {
-        const matches = currentTeamData.matches;
-        if(matches && matches.length > 0) {
-            const sorted = matches.sort((a,b) => new Date(b.utcDate) - new Date(a.utcDate));
-            let html = sorted.map(m => {
-                const d = new Date(m.utcDate);
-                const isFinished = m.status === 'FINISHED';
-                return `
-                    <div class="modal-match">
-                        <div class="team" style="padding:0;"><img src="${m.homeTeam.crest}" style="width:25px;"><div style="font-size:0.7rem;">${m.homeTeam.shortName || 'Home'}</div></div>
-                        <div style="font-size:1.2rem; color:var(--accent); font-weight:bold;">${isFinished ? (m.score.fullTime.home + ' - ' + m.score.fullTime.away) : 'VS'}</div>
-                        <div class="team" style="padding:0;"><img src="${m.awayTeam.crest}" style="width:25px;"><div style="font-size:0.7rem;">${m.awayTeam.shortName || 'Away'}</div></div>
-                    </div>
-                    <div style="text-align:center; font-size:0.65rem; color:var(--text-muted); margin-bottom:15px;">${d.toLocaleDateString('ar-SA')}</div>
-                `;
-            }).join('');
-            body.innerHTML = html;
-        } else {
-            body.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">لا توجد مباريات مسجلة</div>';
-        }
-    }
-}
-
-function switchModalTab(tab, btn) {
-    currentModalTab = tab;
-    document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderModalContent();
-}
-
-function closeModal(e) {
-    if(e && e.target !== document.getElementById('team-modal')) return; 
-    document.getElementById('team-modal').style.display = 'none';
-}
-
-function switchView(view, btn) {
-    currentView = view;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    loadData();
-}
-
-function changeMonth(m, btn) {
-    selectedMonth = m;
-    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    renderData(); 
-}
-
-function changeLeague(code, btn) {
-    currentLeague = code;
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    loadData();
-}
-
-renderMonthsBar();
-loadData();
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ملعبي | النتائج والترتيب</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --bg: #0b1120;
-        --card-bg: rgba(30, 41, 59, 0.7);
-        --accent: #38bdf8;
-        --text-base: #e2e8f0;
-        --text-muted: #94a3b8;
-        --fav-color: #ef4444;
-        --gold: #f59e0b;
-        --live-color: #ef4444;
-        --glass-bg: rgba(15, 23, 42, 0.85);
-        --border-color: rgba(51, 65, 85, 0.5);
-    }
-    
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--text-base); padding: 10px; padding-bottom: 70px; overflow-x: hidden; min-height: 100vh; }
-    
-    header { text-align: center; margin-bottom: 20px; padding-top: 15px; }
-    header h1 { color: white; font-size: 2.3rem; text-shadow: 0 0 20px rgba(56,189,248,0.4); font-weight: 700; }
-
-    .view-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-    .tab-btn { background: rgba(51, 65, 85, 0.4); border: 1px solid var(--border-color); color: var(--text-base); padding: 10px 30px; border-radius: 25px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.3s ease; }
-    .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 4px 15px rgba(56,189,248,0.3); }
-
-    .nav-leagues { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px; }
-    .nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-base); padding: 8px 16px; border-radius: 12px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease; }
-    .nav-btn.active { background: var(--accent); color: #000; font-weight: bold; transform: scale(1.05); border-color: var(--accent); }
-
-    .months-scroller-container { position: sticky; top: 0; z-index: 1000; margin-bottom: 20px; border-radius: 20px; overflow: hidden; }
-    .months-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 15px 10px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); scrollbar-width: none; border-bottom: 1px solid var(--border-color); scroll-behavior: smooth; }
-    .months-scroller::-webkit-scrollbar { display: none; }
-    .month-btn { background: rgba(51, 65, 85, 0.4); border: 1px solid var(--border-color); color: var(--text-base); padding: 8px 20px; border-radius: 50px; cursor: pointer; white-space: nowrap; font-size: 0.85rem; transition: all 0.3s ease; }
-    .month-btn.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); transform: scale(1.05); }
-
-    .matches-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-    @media (min-width: 600px) { .matches-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
-
-    .match-card { background: var(--card-bg); padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; position: relative; transition: all 0.3s ease; border: 1px solid var(--border-color); }
-    .match-card.is-fav { border-color: var(--gold); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(30, 41, 59, 0.7)); }
-    
-    .team { flex: 1; text-align: center; cursor: pointer; position: relative; padding: 8px; border-radius: 12px; transition: all 0.3s ease; }
-    .team:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
-    
-    .crest-container { position: relative; width: 45px; height: 45px; margin: 0 auto; margin-bottom: 8px; }
-    .team-crest { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
-    .team-name { font-size: 0.8rem; font-weight: bold; color: white; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-    
-    .fav-heart { position: absolute; top: -5px; right: -5px; font-size: 1rem; color: #475569; transition: all 0.3s ease; opacity: 0.5; }
-    .is-following .fav-heart { color: var(--fav-color); opacity: 1; text-shadow: 0 0 10px var(--fav-color); transform: scale(1.2); }
-
-    .score-area { flex: 1; text-align: center; padding: 0 10px; }
-    .score { font-size: 1.8rem; color: var(--accent); font-weight: bold; letter-spacing: 2px; }
-    .status-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; display: block; }
-    .live-badge { color: white; background: var(--live-color); padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; animation: blink 1.5s infinite; font-weight: bold; }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    .standings-wrapper { width: 100%; overflow-x: auto; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); padding-bottom: 5px; }
-    .standings-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; white-space: nowrap; }
-    .standings-table th { background: rgba(15, 23, 42, 0.6); padding: 12px 8px; color: var(--accent); font-weight: bold; border-bottom: 2px solid var(--border-color); }
-    .standings-table td { padding: 12px 8px; border-bottom: 1px solid rgba(51, 65, 85, 0.3); }
-    .standings-table tr:hover { background: rgba(255,255,255,0.03); }
-    .team-cell { display: flex; align-items: center; gap: 10px; text-align: right; font-weight: bold; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 10px; }
-    .team-cell:hover { background: rgba(255,255,255,0.1); }
-    .team-cell img { width: 25px; height: 25px; object-fit: contain; }
-    .pts-cell { font-weight: bold; color: var(--accent); font-size: 1rem; }
-    .is-fav-row { background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), transparent); border-right: 4px solid var(--gold); }
-    .group-title { margin: 25px 0 10px; color: white; font-size: 1.1rem; padding-right: 15px; border-right: 4px solid var(--accent); }
-    .follow-btn { cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
-    .follow-btn:hover { transform: scale(1.2); }
-
-    .loader { border: 4px solid #334155; border-top: 4px solid var(--accent); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 50px auto; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .toast { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 4000; box-shadow: 0 10px 20px rgba(0,0,0,0.3); font-size: 0.9rem; transition: all 0.3s ease; opacity: 0; transform: translateX(-50%) translateY(20px); pointer-events: none; }
-    
-    .retry-btn { background: var(--accent); color: #000; border: none; padding: 10px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(56,189,248,0.3); }
-
-    /* 🌟 تصميم نافذة الفريق (Modal) */
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 3000; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
-    .modal-content { background: var(--bg); width: 100%; max-width: 600px; height: 85vh; border-radius: 30px 30px 0 0; border-top: 2px solid var(--accent); display: flex; flex-direction: column; overflow: hidden; animation: slideUp 0.4s ease; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--border-color); background: var(--card-bg); }
-    .modal-title { display: flex; align-items: center; gap: 15px; font-size: 1.2rem; font-weight: bold; color: white; }
-    .modal-title img { width: 40px; height: 40px; object-fit: contain; }
-    .close-btn { background: rgba(239, 68, 68, 0.2); color: var(--fav-color); border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
-    .close-btn:hover { background: var(--fav-color); color: white; }
-    .modal-tabs { display: flex; background: var(--card-bg); }
-    .m-tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: bold; color: var(--text-muted); border-bottom: 3px solid transparent; transition: 0.3s; }
-    .m-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(56, 189, 248, 0.05); }
-    .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
-    
-    .player-card { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid var(--border-color); }
-    .player-info { display: flex; flex-direction: column; }
-    .player-name { font-weight: bold; color: white; margin-bottom: 4px; font-size: 0.95rem; }
-    .player-pos { font-size: 0.75rem; color: var(--accent); }
-    .player-nat { font-size: 0.8rem; color: var(--text-muted); }
-    
-    .modal-match { background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); padding: 12px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-</style>
-</head>
-<body>
-
-<header>
-    <h1>⚽ ملعبي</h1>
-</header>
-
-<div class="view-tabs">
-    <button class="tab-btn active" onclick="switchView('matches', this)">المباريات</button>
-    <button class="tab-btn" onclick="switchView('standings', this)">الترتيب</button>
-</div>
-
-<div class="nav-leagues">
-    <button class="nav-btn active" onclick="changeLeague('PL', this)">الإنجليزي</button>
-    <button class="nav-btn" onclick="changeLeague('PD', this)">الإسباني</button>
-    <button class="nav-btn" onclick="changeLeague('BL1', this)">الألماني</button>
-    <button class="nav-btn" onclick="changeLeague('CL', this)">الأبطال</button>
-    <button class="nav-btn" onclick="changeLeague('FL1', this)">الفرنسي</button>
-</div>
-
-<div class="months-scroller-container" id="months-container">
-    <div class="months-scroller" id="months-bar"></div>
-</div>
-
-<div id="content">
-    <div class="loader"></div>
-</div>
-
-<div id="team-modal" class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <div class="modal-title" id="modal-title-content">
-                <span>جاري التحميل...</span>
-            </div>
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-        </div>
-        <div class="modal-tabs">
-            <div class="m-tab active" onclick="switchModalTab('squad', this)">التشكيلة والمدرب</div>
-            <div class="m-tab" onclick="switchModalTab('matches', this)">المباريات</div>
-        </div>
-        <div class="modal-body" id="modal-body-content"></div>
-    </div>
-</div>
-
-<script>
-window.onerror = function(msg) {
-    document.getElementById('content').innerHTML = `<div style="color:#ef4444; text-align:center; padding:20px;">خطأ: ${msg}</div>`;
-};
-
-const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
-let currentLeague = 'PL';
-let currentView = 'matches'; 
-let selectedMonth = new Date().getMonth(); 
-
-let followedTeams = [];
-try {
-    const saved = localStorage.getItem('followedTeams');
-    if (saved) followedTeams = JSON.parse(saved);
-    if (!Array.isArray(followedTeams)) followedTeams = [];
-} catch (e) {
-    localStorage.removeItem('followedTeams');
-    followedTeams = [];
-}
-
-const cache = { matches: {}, standings: {}, teams: {}, teamMatches: {} };
-const monthsNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-const seasonMonths = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]; 
-
-function renderMonthsBar() {
-    const bar = document.getElementById('months-bar');
-    if(!bar) return;
-    bar.innerHTML = seasonMonths.map(m => `
-        <button class="month-btn ${m === selectedMonth ? 'active' : ''}" onclick="changeMonth(${m}, this)" id="month-${m}">
-            ${monthsNames[m]}
-        </button>
-    `).join('');
-    
-    setTimeout(() => {
-        const activeBtn = document.querySelector('.month-btn.active');
-        if(activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }, 100);
-}
-
-function showToast(msg) {
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-    const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.style.opacity = '1', 50); 
-    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; setTimeout(() => t.remove(), 400); }, 2000);
-}
-
-async function loadData() {
-    const content = document.getElementById('content');
-    if(!content) return;
-    
-    document.getElementById('months-container').style.display = currentView === 'matches' ? 'block' : 'none';
-
-    if (cache[currentView][currentLeague]) {
-        renderData();
-        return;
-    }
-
-    content.innerHTML = '<div class="loader"></div>';
-
-    try {
-        const targetUrl = `https://api.football-data.org/v4/competitions/${currentLeague}/${currentView}`;
-        const proxies = [
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            `https://thingproxy.freeboard.io/fetch/${targetUrl}`
-        ];
-
-        let res;
-        let success = false;
-
-        for (let proxy of proxies) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-                res = await fetch(proxy, { headers: { 'X-Auth-Token': API_KEY }, signal: controller.signal });
-                clearTimeout(timeoutId);
-                
-                if (res.ok || res.status === 429 || res.status === 403) {
-                    success = true; break;
-                }
-            } catch (e) { continue; }
-        }
-
-        if (!success) throw new Error("الشبكة ضعيفة أو تحظر السيرفر 🌐");
-        if (res.status === 429) throw new Error("ضغط على السيرفر! انتظر دقيقة ⏱️");
-        if (res.status === 403) throw new Error("الدوري محظور 🔒");
-        
-        const data = await res.json();
-        cache[currentView][currentLeague] = currentView === 'matches' ? data.matches : data.standings;
-        renderData();
-
-    } catch (error) {
-        content.innerHTML = `<div style='text-align:center; padding:30px;'><p style='color:#ef4444; font-size:1.1rem; font-weight:700;'>⚠️ ${error.message}</p><button class="retry-btn" onclick="loadData()">إعادة المحاولة 🔄</button></div>`;
-    }
-}
-
-function renderData() {
-    if (currentView === 'matches') renderMatches(cache.matches[currentLeague] || []);
-    else renderStandings(cache.standings[currentLeague] || []);
-}
-
-function renderMatches(matches) {
-    if(!matches || matches.length === 0) {
-        document.getElementById('content').innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">لا توجد بيانات حالياً 📅</div>`;
-        return;
-    }
-
-    const filtered = matches.filter(m => new Date(m.utcDate).getMonth() === selectedMonth);
-    const sorted = filtered.sort((a, b) => {
-        const aFav = followedTeams.includes(a.homeTeam.id) || followedTeams.includes(a.awayTeam.id);
-        const bFav = followedTeams.includes(b.homeTeam.id) || followedTeams.includes(b.awayTeam.id);
-        if (aFav && !bFav) return -1;
-        if (!aFav && bFav) return 1;
-        return new Date(a.utcDate) - new Date(b.utcDate);
-    });
-
-    let html = '';
-    sorted.forEach((m) => {
-        const homeFav = followedTeams.includes(m.homeTeam.id);
-        const awayFav = followedTeams.includes(m.awayTeam.id);
-        const isFavMatch = homeFav || awayFav;
+    if(currentMatchTab === 'events') {
+        const m = currentMatchData;
         const d = new Date(m.utcDate);
-        const dateStr = d.toLocaleDateString('ar-SA', {month:'short', day:'numeric'});
-        const timeStr = d.toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
-        const isLive = m.status === 'IN_PLAY' || m.status === 'PAUSED';
-        const isFinished = m.status === 'FINISHED';
-
-        html += `
-            <div class="match-card ${isFavMatch ? 'is-fav' : ''}">
-                <div class="team ${homeFav ? 'is-following' : ''}" onclick="toggleFollow(${m.homeTeam.id}, '${(m.homeTeam.shortName || m.homeTeam.name).replace(/'/g, "\\'")}', event)">
-                    <div class="fav-heart">❤️</div>
-                    <div class="crest-container"><img class="team-crest" src="${m.homeTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'"></div>
-                    <div class="team-name">${m.homeTeam.shortName || m.homeTeam.name}</div>
-                </div>
-                <div class="score-area">
-                    <div class="score">${isFinished || isLive ? (m.score.fullTime.home ?? 0) + ' - ' + (m.score.fullTime.away ?? 0) : 'VS'}</div>
-                    <span class="status-label">${isLive ? '<span class="live-badge">مباشر 🔴</span>' : `${dateStr} | ${timeStr}`}</span>
-                </div>
-                <div class="team ${awayFav ? 'is-following' : ''}" onclick="toggleFollow(${m.awayTeam.id}, '${(m.awayTeam.shortName || m.awayTeam.name).replace(/'/g, "\\'")}', event)">
-                    <div class="fav-heart">❤️</div>
-                    <div class="crest-container"><img class="team-crest" src="${m.awayTeam.crest || 'https://via.placeholder.com/45?text=⚽'}" onerror="this.src='https://via.placeholder.com/45?text=⚽'"></div>
-                    <div class="team-name">${m.awayTeam.shortName || m.awayTeam.name}</div>
+        body.innerHTML = `
+            <div style="text-align:center; margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-around; align-items:center; background:var(--card-bg); padding:20px; border-radius:20px; border:1px solid var(--border-color);">
+                    <div style="text-align:center;"><img src="${m.homeTeam.crest}" style="width:60px;"><div style="font-weight:bold; margin-top:10px;">${m.homeTeam.shortName}</div></div>
+                    <div style="font-size:2.5rem; color:var(--accent); font-weight:bold;">${m.score.fullTime.home ?? '-'} : ${m.score.fullTime.away ?? '-'}</div>
+                    <div style="text-align:center;"><img src="${m.awayTeam.crest}" style="width:60px;"><div style="font-weight:bold; margin-top:10px;">${m.awayTeam.shortName}</div></div>
                 </div>
             </div>
+            <div class="player-card"><div>📅 التاريخ</div><div style="color:var(--accent)">${d.toLocaleDateString('ar-SA')} | ${d.toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'})}</div></div>
+            <div class="player-card"><div>🏆 البطولة</div><div style="color:var(--accent)">${m.competition.name}</div></div>
+            <div class="player-card"><div>🏟️ الملعب</div><div style="color:var(--accent)">${m.venue || 'غير محدد'}</div></div>
         `;
-    });
-
-    document.getElementById('content').innerHTML = html ? `<div class="matches-grid">${html}</div>` : `<div style="text-align:center; padding:40px; color:var(--text-muted);">لا توجد مباريات في هذا الشهر 📅</div>`;
-}
-
-function renderStandings(standingsData) {
-    if(!standingsData || standingsData.length === 0) return;
-    
-    let html = '';
-    standingsData.forEach(group => {
-        if(group.type !== 'TOTAL') return; 
-        if(group.group) html += `<h3 class="group-title">${group.group.replace('_', ' ')}</h3>`;
-        html += `<div class="standings-wrapper"><table class="standings-table"><thead><tr><th>#</th><th style="text-align: right;">الفريق</th><th>لعب</th><th>ف</th><th>ت</th><th>خ</th><th>+/-</th><th>نقاط</th><th>⭐</th></tr></thead><tbody>`;
-        html += group.table.map(row => {
-            const isFav = followedTeams.includes(row.team.id);
-            return `
-                <tr class="${isFav ? 'is-fav-row' : ''}">
-                    <td>${row.position}</td>
-                    <td class="team-cell" onclick="openTeamProfile(${row.team.id})">
-                        <img src="${row.team.crest}" onerror="this.src='https://via.placeholder.com/25?text=⚽'">
-                        <span>${row.team.shortName || row.team.name}</span>
-                    </td>
-                    <td>${row.playedGames}</td><td>${row.won}</td><td>${row.draw}</td><td>${row.lost}</td><td dir="ltr">${row.goalDifference}</td><td class="pts-cell">${row.points}</td>
-                    <td class="follow-btn" onclick="toggleFollow(${row.team.id}, '${(row.team.shortName || row.team.name).replace(/'/g, "\\'")}', event)">${isFav ? '❤️' : '🤍'}</td>
-                </tr>`;
-        }).join('');
-        html += `</tbody></table></div>`;
-    });
-    
-    document.getElementById('content').innerHTML = html;
-}
-
-function toggleFollow(id, name, event) {
-    if(event) event.stopPropagation(); // منع فتح الملف عند ضغط القلب
-    const index = followedTeams.indexOf(id);
-    if (index > -1) {
-        followedTeams.splice(index, 1);
-        showToast("💔 أزلنا " + name);
     } else {
-        followedTeams.push(id);
-        showToast("❤️ نتابع " + name);
+        body.innerHTML = `
+            <div class="premium-lock">
+                <span>🔒</span>
+                <h3>ميزة متقدمة (Premium)</h3>
+                <p>إحصائيات الاستحواذ وتشكيلة المباراة الدقيقة تتطلب ربط الموقع بمزود بيانات مدفوع (مثل Opta أو Sportmonks). النسخة المجانية لا تدعم هذه البيانات.</p>
+            </div>
+        `;
     }
-    localStorage.setItem('followedTeams', JSON.stringify(followedTeams));
-    renderData(); 
 }
 
-// 🌟 أكواد ملف الفريق (Team Profile)
+function switchMatchTab(tab, btn) {
+    currentMatchTab = tab;
+    document.querySelectorAll('#match-modal .m-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMatchModalContent();
+}
+
+function closeMatchModal(e) {
+    if(e && e.target !== document.getElementById('match-modal')) return; 
+    document.getElementById('match-modal').style.display = 'none';
+}
+
+/* =========================================
+   🛡️ أكواد نافذة الفريق (Team Profile)
+========================================= */
 let currentTeamData = null;
-let currentModalTab = 'squad';
+let currentTeamTab = 'matches'; // الافتراضي: المباريات (مثل 365)
 
 async function openTeamProfile(teamId) {
     document.getElementById('team-modal').style.display = 'flex';
-    document.getElementById('modal-title-content').innerHTML = '<span>جاري التحميل...</span>';
-    document.getElementById('modal-body-content').innerHTML = '<div class="loader"></div>';
+    document.getElementById('team-modal-body').innerHTML = '<div class="loader"></div>';
     
-    currentModalTab = 'squad';
-    document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.m-tab')[0].classList.add('active');
+    currentTeamTab = 'matches';
+    document.querySelectorAll('#team-modal .m-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#team-modal .m-tab')[0].classList.add('active');
 
     try {
-        // جلب معلومات الفريق واللاعبين
         if(!cache.teams[teamId]) {
             const res = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.football-data.org/v4/teams/' + teamId)}`, {headers: {'X-Auth-Token': API_KEY}});
-            if(!res.ok) throw new Error();
-            cache.teams[teamId] = await res.json();
+            if(res.ok) cache.teams[teamId] = await res.json();
         }
-        
-        // جلب مباريات الفريق
         if(!cache.teamMatches[teamId]) {
             const mRes = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.football-data.org/v4/teams/' + teamId + '/matches?limit=30')}`, {headers: {'X-Auth-Token': API_KEY}});
-            if(mRes.ok) {
-                const mData = await mRes.json();
-                cache.teamMatches[teamId] = mData.matches;
-            }
+            if(mRes.ok) cache.teamMatches[teamId] = (await mRes.json()).matches;
         }
 
         currentTeamData = { info: cache.teams[teamId], matches: cache.teamMatches[teamId] || [] };
 
-        document.getElementById('modal-title-content').innerHTML = `
-            <img src="${currentTeamData.info.crest}">
-            <span>${currentTeamData.info.shortName || currentTeamData.info.name}</span>
-        `;
-        renderModalContent();
+        document.getElementById('team-modal-title').innerHTML = `<img src="${currentTeamData.info.crest}"><span>${currentTeamData.info.shortName || currentTeamData.info.name}</span>`;
+        renderTeamModalContent();
 
     } catch (e) {
-        document.getElementById('modal-body-content').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px; font-weight:bold;">❌ فشل تحميل بيانات الفريق</div>';
+        document.getElementById('team-modal-body').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">❌ فشل تحميل بيانات الفريق</div>';
     }
 }
 
-function renderModalContent() {
-    const body = document.getElementById('modal-body-content');
+function renderTeamModalContent() {
+    const body = document.getElementById('team-modal-body');
     if(!currentTeamData) return;
 
-    if(currentModalTab === 'squad') {
-        const squad = currentTeamData.info.squad;
-        const coach = currentTeamData.info.coach;
-        let html = '';
-        
-        if(coach && coach.name) {
-            html += `<div class="player-card" style="border-color:var(--gold); border-width:2px;">
-                <div class="player-info"><span class="player-name">👔 ${coach.name}</span><span class="player-pos">المدرب (Coach)</span></div>
-                <div class="player-nat">${coach.nationality || ''}</div>
-            </div>`;
-        }
+    if(currentTeamTab === 'matches') {
+        const matches = currentTeamData.matches;
+        if(matches && matches.length > 0) {
+            const sorted = matches.sort((a,b) => new Date(b.utcDate) - new Date(a.utcDate));
+            body.innerHTML = sorted.map(m => {
+                const isFinished = m.status === 'FINISHED';
+                return `
+                    <div class="modal-match" onclick="openMatchProfile(${m.id})">
+                        <div class="team" style="padding:0;"><img src="${m.homeTeam.crest}" style="width:30px;"><div style="font-size:0.75rem;">${m.homeTeam.shortName}</div></div>
+                        <div style="font-size:1.3rem; color:var(--accent); font-weight:bold;">${isFinished ? (m.score.fullTime.home + ' - ' + m.score.fullTime.away) : 'VS'}</div>
+                        <div class="team" style="padding:0;"><img src="${m.awayTeam.crest}" style="width:30px;"><div style="font-size:0.75rem;">${m.awayTeam.shortName}</div></div>
+                    </div>
+                `;
+            }).join('');
+        } else { body.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">لا توجد مباريات مسجلة</div>'; }
 
+    } else if (currentTeamTab === 'squad') {
+        const squad = currentTeamData.info.squad;
+        let html = '';
         if(squad && squad.length > 0) {
             html += squad.map(p => `
                 <div class="player-card">
@@ -880,49 +449,35 @@ function renderModalContent() {
                     <div class="player-nat">${p.nationality || ''}</div>
                 </div>
             `).join('');
-        } else {
-            html += '<div style="text-align:center; padding:20px; color:var(--text-muted);">بيانات اللاعبين غير متوفرة</div>';
-        }
-        body.innerHTML = html;
-
-    } else {
-        const matches = currentTeamData.matches;
-        if(matches && matches.length > 0) {
-            const sorted = matches.sort((a,b) => new Date(b.utcDate) - new Date(a.utcDate));
-            let html = sorted.map(m => {
-                const d = new Date(m.utcDate);
-                const isFinished = m.status === 'FINISHED';
-                return `
-                    <div class="modal-match">
-                        <div class="team" style="padding:0;"><img src="${m.homeTeam.crest}" style="width:25px;"><div style="font-size:0.7rem;">${m.homeTeam.shortName || 'Home'}</div></div>
-                        <div style="font-size:1.2rem; color:var(--accent); font-weight:bold;">${isFinished ? (m.score.fullTime.home + ' - ' + m.score.fullTime.away) : 'VS'}</div>
-                        <div class="team" style="padding:0;"><img src="${m.awayTeam.crest}" style="width:25px;"><div style="font-size:0.7rem;">${m.awayTeam.shortName || 'Away'}</div></div>
-                    </div>
-                    <div style="text-align:center; font-size:0.65rem; color:var(--text-muted); margin-bottom:15px;">${d.toLocaleDateString('ar-SA')}</div>
-                `;
-            }).join('');
             body.innerHTML = html;
-        } else {
-            body.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">لا توجد مباريات مسجلة</div>';
-        }
+        } else { body.innerHTML = '<div style="text-align:center; color:var(--text-muted);">التشكيلة غير متوفرة</div>'; }
+
+    } else if (currentTeamTab === 'transfers') {
+        body.innerHTML = `
+            <div class="premium-lock">
+                <span>🔄</span>
+                <h3>سوق الانتقالات</h3>
+                <p>أخبار وتقارير اللاعبين المحتمل انتقالهم (الشائعات) غير مدعومة في النسخة المجانية من API. تتطلب هذه الميزة الترقية إلى باقات مدفوعة.</p>
+            </div>
+        `;
     }
 }
 
-function switchModalTab(tab, btn) {
-    currentModalTab = tab;
-    document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('active'));
+function switchTeamTab(tab, btn) {
+    currentTeamTab = tab;
+    document.querySelectorAll('#team-modal .m-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    renderModalContent();
+    renderTeamModalContent();
 }
 
-function closeModal(e) {
+function closeTeamModal(e) {
     if(e && e.target !== document.getElementById('team-modal')) return; 
     document.getElementById('team-modal').style.display = 'none';
 }
 
 function switchView(view, btn) {
     currentView = view;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view-tabs .tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     loadData();
 }
@@ -931,7 +486,6 @@ function changeMonth(m, btn) {
     selectedMonth = m;
     document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     renderData(); 
 }
 
