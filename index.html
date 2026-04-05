@@ -10,26 +10,28 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding: 15px; line-height: 1.6; }
         header { text-align: center; margin-bottom: 20px; padding: 20px; border-bottom: 2px solid var(--card); }
-        header h1 { color: var(--accent); font-size: 2rem; }
+        header h1 { color: var(--accent); font-size: 2.2rem; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
         .nav-leagues { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-        .nav-btn { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
-        .nav-btn.active { background: var(--accent); color: var(--bg); font-weight: bold; }
-        .match-card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        .team { flex: 2; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .team img { width: 40px; height: 40px; object-fit: contain; }
+        .nav-btn { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
+        .nav-btn.active { background: var(--accent); color: var(--bg); font-weight: bold; transform: scale(1.05); }
+        .match-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border-right: 5px solid var(--accent); transition: 0.3s; }
+        .team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .team img { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .team span { font-weight: bold; font-size: 0.9rem; }
         .score-area { flex: 1; text-align: center; }
-        .score { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
-        .live-tag { background: var(--live); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
-        .loading { text-align: center; margin-top: 30px; color: var(--accent); }
-        .error-msg { text-align: center; color: #f87171; padding: 20px; }
+        .score { font-size: 1.8rem; font-weight: bold; color: var(--accent); letter-spacing: 5px; }
+        .live-tag { background: var(--live); color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.75rem; animation: blink 1s infinite; display: inline-block; margin-top: 5px; }
+        @keyframes blink { 50% { opacity: 0.4; } }
+        .status-label { font-size: 0.8rem; color: #94a3b8; display: block; margin-top: 5px; }
+        .loading { text-align: center; margin-top: 50px; color: var(--accent); font-size: 1.2rem; }
+        .error-msg { text-align: center; color: #f87171; padding: 30px; background: rgba(248, 113, 113, 0.1); border-radius: 15px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>⚽ ملعبي</h1>
-        <p>نتائج حية من قلب الحدث</p>
+        <p>نتائج حية وجدول المباريات</p>
     </header>
 
     <div class="nav-leagues">
@@ -41,58 +43,72 @@
     </div>
 
     <div id="matches-container">
-        <div class="loading">جاري جلب المباريات...</div>
+        <div class="loading">جاري فحص الملاعب...</div>
     </div>
 
     <script>
+        // ضع مفتاحك الخاص هنا الذي وصلك في الإيميل
         const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
         let currentLeague = 'PL';
 
         async function fetchMatches() {
             const container = document.getElementById('matches-container');
+            container.innerHTML = '<div class="loading">جاري تحديث النتائج...</div>';
+            
             try {
-                const response = await fetch(`https://api.football-data.org/v4/competitions/${currentLeague}/matches`, {
+                const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.football-data.org/v4/competitions/${currentLeague}/matches`)}`, {
                     headers: { 'X-Auth-Token': API_KEY }
                 });
 
                 if (response.status === 429) {
-                    throw new Error('أبطئ قليلاً! تم الوصول للحد الأقصى من الطلبات. انتظر دقيقة.');
+                    throw new Error('وصلت للحد الأقصى! انتظر دقيقة واحدة وحاول مجدداً.');
                 }
 
                 const data = await response.json();
                 renderMatches(data.matches);
             } catch (error) {
-                container.innerHTML = `<div class="error-msg">${error.message}</div>`;
+                container.innerHTML = `
+                    <div class="error-msg">
+                        <p>⚠️ عذراً: ${error.message}</p>
+                        <p style="font-size: 0.8rem; margin-top:10px;">جرب تحديث الصفحة بعد قليل</p>
+                    </div>`;
             }
         }
 
         function renderMatches(matches) {
             const container = document.getElementById('matches-container');
-            // عرض مباريات اليوم فقط
-            const today = new Date().toISOString().split('T')[0];
-            const todayMatches = matches.filter(m => m.utcDate.startsWith(today));
+            
+            // ترتيب المباريات: نعرض آخر 12 مباراة تم لعبها أو ستلعب قريباً
+            const sortedMatches = matches
+                .sort((a, b) => new Date(b.utcDate) - new Date(a.utcDate))
+                .slice(0, 12);
 
-            if (todayMatches.length === 0) {
-                container.innerHTML = '<div class="loading">لا توجد مباريات مجدولة لليوم.</div>';
+            if (!sortedMatches || sortedMatches.length === 0) {
+                container.innerHTML = '<div class="loading">لا توجد بيانات حالياً لهذا الدوري.</div>';
                 return;
             }
 
-            container.innerHTML = todayMatches.map(match => {
+            container.innerHTML = sortedMatches.map(match => {
                 const isLive = ['IN_PLAY', 'PAUSED'].includes(match.status);
+                const matchTime = new Date(match.utcDate).toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
+                const matchDate = new Date(match.utcDate).toLocaleDateString('ar-SA', {month:'short', day:'numeric'});
+                
                 return `
                     <div class="match-card">
                         <div class="team">
-                            <img src="${match.homeTeam.crest}">
+                            <img src="${match.homeTeam.crest}" onerror="this.src='https://via.placeholder.com/40?text=?'">
                             <span>${match.homeTeam.shortName || match.homeTeam.name}</span>
                         </div>
                         <div class="score-area">
-                            <div class="score">${match.score.fullTime.home ?? 0} - ${match.score.fullTime.away ?? 0}</div>
+                            <div class="score">
+                                ${match.score.fullTime.home ?? 0} - ${match.score.fullTime.away ?? 0}
+                            </div>
                             <div class="status">
-                                ${isLive ? '<span class="live-tag">مباشر</span>' : new Date(match.utcDate).toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'})}
+                                ${isLive ? '<span class="live-tag">مباشر</span>' : `<span class="status-label">${matchDate} | ${matchTime}</span>`}
                             </div>
                         </div>
                         <div class="team">
-                            <img src="${match.awayTeam.crest}">
+                            <img src="${match.awayTeam.crest}" onerror="this.src='https://via.placeholder.com/40?text=?'">
                             <span>${match.awayTeam.shortName || match.awayTeam.name}</span>
                         </div>
                     </div>
@@ -101,15 +117,15 @@
         }
 
         function changeLeague(code, btn) {
+            if (btn.classList.contains('active')) return;
             currentLeague = code;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             fetchMatches();
         }
 
+        // تشغيل أول مرة
         fetchMatches();
-        // تحديث تلقائي كل دقيقتين لتجنب الحظر
-        setInterval(fetchMatches, 120000);
     </script>
 </body>
 </html>
