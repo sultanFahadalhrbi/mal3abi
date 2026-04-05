@@ -3,224 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ملعبي Pro</title>
-
+<title>ملعبي Pro | أرشيف الموسم</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-:root {
---bg: #0f172a;
---card: #1e293b;
---accent: #38bdf8;
---text: #f1f5f9;
---fav: #f59e0b;
-}
+    :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; --fav: #f59e0b; --live: #ef4444; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 10px; padding-bottom: 50px; }
+    
+    header { text-align: center; margin-bottom: 15px; }
+    header h1 { color: var(--accent); font-size: 1.8rem; }
+    #fav-name { color: var(--fav); font-weight: bold; font-size: 0.9rem; margin-top: 5px; }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', sans-serif; }
+    /* شريط الشهور المتحرك */
+    .months-scroller { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; margin-bottom: 15px; white-space: nowrap; scrollbar-width: none; }
+    .months-scroller::-webkit-scrollbar { display: none; }
+    .month-btn { background: var(--card); border: 1px solid #334155; color: var(--text); padding: 8px 18px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
+    .month-btn.active { background: var(--fav); color: #000; border-color: var(--fav); font-weight: bold; }
 
-body {
-background: var(--bg);
-color: var(--text);
-padding: 15px;
-padding-bottom: 80px;
-}
+    .nav-leagues { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 10px; }
+    .nav-btn { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 6px 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+    .nav-btn.active { background: var(--accent); color: var(--bg); font-weight: bold; }
 
-header {
-text-align: center;
-margin-bottom: 20px;
-}
+    .match-card { background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .match-card.is-fav { border-right-color: var(--fav); background: rgba(245, 158, 11, 0.05); }
+    
+    .team { flex: 1; text-align: center; cursor: pointer; }
+    .team img { width: 32px; height: 32px; object-fit: contain; }
+    .team div { font-size: 0.75rem; font-weight: bold; margin-top: 4px; }
 
-header h1 {
-color: var(--accent);
-}
+    .score-area { flex: 1; text-align: center; }
+    .score { font-size: 1.4rem; color: var(--accent); font-weight: bold; }
+    .status-label { font-size: 0.7rem; color: #94a3b8; margin-top: 3px; }
 
-.hint {
-font-size: 0.8rem;
-color: #94a3b8;
-margin-top: 5px;
-}
+    .loader { border: 3px solid #334155; border-top: 3px solid var(--accent); border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 40px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-.loader {
-border: 3px solid #334155;
-border-top: 3px solid var(--accent);
-border-radius: 50%;
-width: 30px;
-height: 30px;
-animation: spin 1s linear infinite;
-margin: 40px auto;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.nav-leagues {
-display: flex;
-flex-wrap: wrap;
-gap: 6px;
-justify-content: center;
-margin: 15px 0;
-}
-
-.nav-btn {
-background: var(--card);
-border: 1px solid var(--accent);
-color: var(--text);
-padding: 8px 12px;
-border-radius: 10px;
-cursor: pointer;
-}
-
-.nav-btn.active {
-background: var(--accent);
-color: var(--bg);
-}
-
-.match-card {
-background: var(--card);
-padding: 12px;
-border-radius: 12px;
-margin-bottom: 10px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-.team {
-flex: 1;
-text-align: center;
-cursor: pointer;
-}
-
-.team img {
-width: 36px;
-}
-
-.score-area {
-flex: 1;
-text-align: center;
-}
-
-.score {
-font-size: 1.3rem;
-color: var(--accent);
-font-weight: bold;
-}
-
-.status-label {
-font-size: 0.75rem;
-color: #94a3b8;
-}
-
-.toast {
-position: fixed;
-bottom: 20px;
-left: 50%;
-transform: translateX(-50%);
-background: var(--accent);
-color: #000;
-padding: 10px 15px;
-border-radius: 8px;
-}
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--fav); color: #000; padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 1000; }
 </style>
 </head>
-
 <body>
 
 <header>
-<h1>⚽ ملعبي Pro</h1>
-<p class="hint">اختر فريقك المفضل ⭐</p>
-<p id="fav-name"></p>
+    <h1>⚽ ملعبي Pro</h1>
+    <div id="fav-name"></div>
 </header>
 
+<div class="months-scroller" id="months-bar"></div>
+
 <div class="nav-leagues">
-<button class="nav-btn active" onclick="changeLeague('PL', this)">الإنجليزي</button>
-<button class="nav-btn" onclick="changeLeague('PD', this)">الإسباني</button>
+    <button class="nav-btn active" onclick="changeLeague('PL', this)">الإنجليزي</button>
+    <button class="nav-btn" onclick="changeLeague('PD', this)">الإسباني</button>
+    <button class="nav-btn" onclick="changeLeague('BL1', this)">الألماني</button>
+    <button class="nav-btn" onclick="changeLeague('CL', this)">الأبطال</button>
+    <button class="nav-btn" onclick="changeLeague('FL1', this)">الفرنسي</button>
 </div>
 
 <div id="content">
-<div class="loader"></div>
+    <div class="loader"></div>
 </div>
 
 <script>
-const API_KEY = 'PUT_YOUR_KEY_HERE';
+const API_KEY = '9b0890e8a1324b4e9161b2cac08666dd';
 let currentLeague = 'PL';
+let selectedMonth = new Date().getMonth(); // الشهر الحالي تلقائياً
 let favoriteTeamId = localStorage.getItem('favTeamId');
 let favoriteTeamName = localStorage.getItem('favTeamName');
 
-function showToast(msg) {
-const t = document.createElement("div");
-t.className = "toast";
-t.innerText = msg;
-document.body.appendChild(t);
-setTimeout(()=>t.remove(),2000);
+// توليد أزرار الشهور (من أغسطس 2025 إلى يونيو 2026)
+const monthsNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+const seasonMonths = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]; // شهور الموسم الكروي
+
+function renderMonthsBar() {
+    const bar = document.getElementById('months-bar');
+    bar.innerHTML = seasonMonths.map(m => `
+        <button class="month-btn ${m === selectedMonth ? 'active' : ''}" onclick="changeMonth(${m}, this)">
+            ${monthsNames[m]}
+        </button>
+    `).join('');
 }
 
-async function fetchMatches() {
-const url = `https://api.football-data.org/v4/competitions/${currentLeague}/matches`;
-const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {
-headers: { 'X-Auth-Token': API_KEY }
-});
-return await res.json();
+function showToast(msg) {
+    const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
 }
 
 async function load() {
-document.getElementById('content').innerHTML = '<div class="loader"></div>';
+    const content = document.getElementById('content');
+    content.innerHTML = '<div class="loader"></div>';
+    if (favoriteTeamName) document.getElementById('fav-name').innerText = "⭐ " + favoriteTeamName;
 
-try {
-const data = await fetchMatches();
-render(data.matches);
-} catch {
-document.getElementById('content').innerHTML = "❌ فشل تحميل البيانات";
-}
+    try {
+        const url = `https://api.football-data.org/v4/competitions/${currentLeague}/matches?season=2025`;
+        const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {
+            headers: { 'X-Auth-Token': API_KEY }
+        });
+        const data = await res.json();
+        render(data.matches);
+    } catch {
+        content.innerHTML = "<div style='text-align:center;'>❌ خطأ في جلب بيانات الموسم</div>";
+    }
 }
 
 function render(matches) {
-const html = matches.slice(0,15).map(m => {
-const isLive = m.status === "IN_PLAY";
-return `
-<div class="match-card">
-<div class="team" onclick="setFav(${m.homeTeam.id}, '${m.homeTeam.name}')">
-<img src="${m.homeTeam.crest}">
-<div>${m.homeTeam.shortName}</div>
-</div>
+    // فلترة المباريات حسب الشهر المختار
+    const filtered = matches.filter(m => new Date(m.utcDate).getMonth() === selectedMonth);
 
-<div class="score-area">
-<div class="score">${m.score.fullTime.home ?? '-'} : ${m.score.fullTime.away ?? '-'}</div>
-<div class="status-label">${isLive ? '🔴 مباشر' : new Date(m.utcDate).toLocaleDateString('ar-SA')}</div>
-</div>
+    // ترتيب: المفضل أولاً ثم التاريخ
+    const sorted = filtered.sort((a, b) => {
+        const aFav = (a.homeTeam.id == favoriteTeamId || a.awayTeam.id == favoriteTeamId);
+        const bFav = (b.homeTeam.id == favoriteTeamId || b.awayTeam.id == favoriteTeamId);
+        if (aFav && !bFav) return -1;
+        if (!aFav && bFav) return 1;
+        return new Date(a.utcDate) - new Date(b.utcDate);
+    });
 
-<div class="team" onclick="setFav(${m.awayTeam.id}, '${m.awayTeam.name}')">
-<img src="${m.awayTeam.crest}">
-<div>${m.awayTeam.shortName}</div>
-</div>
-</div>
-`;
-}).join('');
+    const html = sorted.map(m => {
+        const isFavMatch = m.homeTeam.id == favoriteTeamId || m.awayTeam.id == favoriteTeamId;
+        const d = new Date(m.utcDate);
+        const dateStr = d.toLocaleDateString('ar-SA', {day:'numeric', month:'short'});
+        
+        return `
+            <div class="match-card ${isFavMatch ? 'is-fav' : ''}">
+                <div class="team" onclick="setFav(${m.homeTeam.id}, '${m.homeTeam.shortName || m.homeTeam.name}')">
+                    <img src="${m.homeTeam.crest}">
+                    <div>${m.homeTeam.shortName || m.homeTeam.name}</div>
+                </div>
+                <div class="score-area">
+                    <div class="score">${m.score.fullTime.home ?? '-'} : ${m.score.fullTime.away ?? '-'}</div>
+                    <div class="status-label">${dateStr}</div>
+                </div>
+                <div class="team" onclick="setFav(${m.awayTeam.id}, '${m.awayTeam.shortName || m.awayTeam.name}')">
+                    <img src="${m.awayTeam.crest}">
+                    <div>${m.awayTeam.shortName || m.awayTeam.name}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
 
-document.getElementById('content').innerHTML = html;
-
-if (favoriteTeamName) {
-document.getElementById('fav-name').innerText = "فريقك: " + favoriteTeamName;
+    document.getElementById('content').innerHTML = html || `<div style="text-align:center; padding:20px;">لا توجد مباريات في شهر ${monthsNames[selectedMonth]}</div>`;
 }
+
+function changeMonth(m, btn) {
+    selectedMonth = m;
+    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    load();
 }
 
 function setFav(id, name) {
-favoriteTeamId = id;
-favoriteTeamName = name;
-localStorage.setItem('favTeamId', id);
-localStorage.setItem('favTeamName', name);
-showToast("تم اختيار " + name);
-load();
+    favoriteTeamId = id; favoriteTeamName = name;
+    localStorage.setItem('favTeamId', id); localStorage.setItem('favTeamName', name);
+    showToast("تم تفضيل " + name);
+    load();
 }
 
 function changeLeague(code, btn) {
-currentLeague = code;
-document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-btn.classList.add('active');
-load();
+    currentLeague = code;
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    load();
 }
 
+renderMonthsBar();
 load();
 </script>
-
 </body>
 </html>
